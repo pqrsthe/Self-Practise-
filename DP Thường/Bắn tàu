@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+// HSG TPHCM 12 năm 2023 - Bài 2
+#define ll long long
+ll n,k,a[509],dp[509][509],st[9][509],pre[509];
+const int LG = 8;
+
+void build()
+{
+	// st(i,j): max trong pow(2,i) so tinh tu j
+	for (int j = 1; j <= n; j++) st[0][j] = a[j];
+	for (int i = 1; i <= LG; i++)
+		for (int j = 1; j <= n; j++)
+			st[i][j] = max(st[i - 1][j] , st[i - 1][j + (1 << (i - 1))]);
+}
+int getmax(int l, int r)
+{
+	int k = __lg(r - l + 1);
+	return max(st[k][l] , st[k][r - (1 << k) + 1]);
+}
+void sol()
+{
+	// dp(i,j) la so diem bi tru nho nhat khi ban i tau dau tien voi so lan da ban la j
+	// dp(i,j) = min (k chay tu 1 -> i) cua dp(k-1)(j-1) + max(ak..ai)*(i-k+1) - sum(ak.. ai);
+	build();
+	dp[0][0] = 0;
+	for (int i = 1; i <= n; i++)
+	    for (int j = 1; j <= k + 1; j++) 
+	        dp[i][j] = 1e9;
+	for (int i = 1; i <= n; i++) dp[i][1] = getmax(1,i)*(i) - pre[i];
+	for (int j = 2; j <= k+1; j++)
+	{
+		for (int i = 1; i <= n; i++)
+		{
+			
+			for (int tmp = 1; tmp <= i; tmp++)
+			{
+				int res1 = getmax(tmp , i);
+				int res2 = pre[i] - pre[tmp - 1];
+				dp[i][j] = min(dp[i][j], dp[tmp - 1][j - 1] + res1*(i - tmp + 1) - res2);	
+			}
+			
+		}
+	}
+    cout << dp[n][k + 1];
+}
+int main ()
+{
+	cin >> n >> k;
+	for (int i =1 ; i <= n; i++) 
+	{
+		cin >> a[i];
+		pre[i] = pre[i - 1] + a[i];
+	}
+	sol();
+	return 0;
+}
