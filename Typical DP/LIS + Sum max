@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct xy{
+	int len, sum;
+};
+int n,a[10009],pos[10009];
+xy dp[10009];
+
+void Input(){
+	cin >> n;
+	for (int i = 1; i <= n; i++) cin >> a[i];
+}
+void sol(){
+	for (int i = 1; i <= n; i++){
+		dp[i].len = 1;
+		dp[i].sum = a[i];
+	}
+
+	for (int i = 2; i <= n; i++)
+		for (int j = i - 1; j >= 1; j--){
+			if (a[i] > a[j] && dp[i].len < dp[j].len + 1){
+				dp[i].len = dp[j].len + 1; 
+				dp[i].sum = dp[j].sum + a[i];
+			}
+			else if (a[i] > a[j] && dp[i].len == (dp[j].len + 1)){
+				if (dp[i].sum < (dp[j].sum + a[i]))
+					dp[i].sum = dp[j].sum + a[i];
+			}
+		}
+}
+void trace(){
+	int len = 1;
+	long long sum = 0;
+	for (int i = 1; i <= n; i++) len = max(len , dp[i].len);
+	cout << len << " ";
+	int tmp, cnt = 0;
+	for (int i = 1; i <= n; i++) 
+		if (dp[i].len == len)
+			pos[++cnt] = i; 
+	for (int i = 1; i <= cnt; i++) 
+		if (dp[pos[i]].sum > sum) sum = dp[pos[i]].sum; 
+	cout << sum << endl;
+}
+
+int main (){
+// freopen ("Dayconmax.inp","r",stdin);
+// freopen ("Dayconmax.out","w",stdout);
+	Input();
+	sol();
+	trace();
+	return 0;
+}
