@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+// Đề thi Tin học trẻ sơ khảo Hà Nội bảng B năm 2022 - Bài 4
 #define el '\n'
 #define int long long
 #define float double
