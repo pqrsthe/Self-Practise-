@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+// Vnoi Semi-final cup 2024 - Bai 1: Dai cong trinh
+// https://oj.vnoi.info/problem/codetour24_sf_a
+#define ll long long
+ll n,m,k,x,y,tmp,a[10009],dp[10009][21];
+void Input()
+{
+	cin >> n >> m; 
+	cin >> k >> x >> y; 
+	for (int i = 1; i <= n; i++) cin >> a[i];	
+}
+void sol()
+{
+	// Goi dp(i,j) la chi phi nho nhat de ghep i cong trinh dau tien thanh j dai cong trinh
+	// THCS: dp(i,i) = d(i-1,i-1) + (if (a(i)==k) -> +x) else +y;
+	//        dp(i,1) = if (gcd(a1 -> ai) == k) -> +x else +y;
+	// CTTH: dp(i,j) = min (dp(k - 1, j - 1) + gcd (ak -> ai)  
+	// THCS:
+	for (int i = 1; i <= n; i++) for (int j = 1; j <= m; j++) dp[i][j] = 1e18;
+	for (int i = 1; i <= n; i++) 
+	{
+		if (i == 1) tmp = a[1];
+		else tmp = __gcd(tmp , a[i]);
+		dp[i][i] = dp[i - 1][i - 1];
+		if (a[i] == k) dp[i][i] += x;
+		else dp[i][i] += y;
+		if (tmp == k) dp[i][1] = x; 
+		else dp[i][1] = y;
+	}
+	// CTTH:
+	for (int j = 2; j <= m; j++)
+	{
+		for (int i = j + 1; i <= n; i++)
+		{
+			tmp = a[i];
+			for (int d = i; d >= j; d--)
+			{
+				tmp = __gcd(tmp , a[d]);
+				if (tmp == k) dp[i][j] = min(dp[i][j] , dp[d - 1][j - 1] + x);
+				else dp[i][j] = min(dp[i][j] , dp[d - 1][j - 1] + y);
+			}
+		}
+	} 
+	cout << dp[n][m] << endl;
+}
+int main ()
+{
+	Input();
+	sol();	
+	return 0;
+}
