@@ -1,0 +1,85 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define el '\n'
+#define ll long long
+//#define bit(n,i) ((n >> i) & 1)
+const int nm = 1e4 + 9;
+
+int n; 
+ll dp[16][nm]; 
+int a[4][nm]; 
+bool d[16];
+
+bool bit(int n, int i){
+	return ((n >> i) & 1);
+}
+
+string rev(int x){
+	string s = ""; 
+	int tmp = x; 
+	if (tmp == 0) return "0";
+	while (tmp != 0){
+		s += to_string(tmp % 2); 
+		tmp /= 2; 
+	}
+	string t = "";
+	for (int i = s.length() - 1; i >= 0; i--) t += s[i];
+	return t;
+}
+
+bool check(int mask, int j){
+	string a = rev(mask); 
+	string b = rev(j); 
+	while (a.size() < 4) a = "0" + a; 
+	while (b.size() < 4) b = "0" + b; 
+	for (int i = 0; i < 4; i++)
+		if (a[i] == b[i] and a[i] == '1' && b[i] == '1') return false;
+	return true; 
+}
+
+ll get(int j, int index){
+	string s = rev(j);
+	while (s.size() < 4) s = "0" + s;
+	ll tong = 0;  
+	for (int i = 0; i < s.size(); i++)
+		if (s[i] == '1') tong += a[i][index]; 
+	return tong; 
+}
+
+signed main (){
+//	freopen ("QHDbitmask_Chono.inp","r",stdin); 
+//	freopen ("QHDbitmask_Chono.out","w",stdout); 
+	cin >> n; 
+	ll ans = 0;
+	int yeb = -1e9;
+	for (int i = 0; i < 4; i++)
+		for (int j = 1; j <= n; j++){
+			cin >> a[i][j]; 
+			yeb = max(yeb , a[i][j]); 
+		}
+	for (int i = 0; i < 15; i++){
+		bool check = true;
+		for (int j = 0; j < 3; j++)
+			if (bit(i , j) && bit(i, j + 1)) check = false; 
+		d[i] = check;  	
+	}
+	for (int i = 1; i <= n; i++)
+		for (int mask = 0; mask < 16; mask++)
+			if (d[mask]){
+				ll sum = 0; 
+//				for (int j = 0; j < 4; j++)
+//					if (bit(mask , j)) sum += a[j][i]; 
+				for (int j = 0; j < 16; j++){
+					if (d[j] && !(j & mask)){
+//					if (d[j] && check(mask, j)){
+//						cout << "mask la: " << mask << " va j la: " << j << endl;
+						ll sum = get(j, i); 
+						dp[mask][i] = max(dp[mask][i] , dp[j][i - 1] + sum);
+						ans = max(ans , dp[mask][i]);
+					}
+				}
+			}
+	if (ans == 0) cout << yeb; 
+	else cout << ans;
+	return 0;
+}
