@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+#define ll long long
+#define bit(n , i) ((n >> i) & 1)
+  // dp(i,j) la chi phi nho nhat khi di qua cau
+	// hinh i voi dat nuoc ket thuc trong cau hinh truoc do la j
+	// cau hinh i duoc bieu dien duoi dang thap phan
+	// dp(i,j) = min(dp(p)(q) + c[q][j]) 
+	// trong do: p la cau hinh i - dat nuoc j chua di qua
+	// torng do: q la dat nuoc voi bit duoc bat trong cau hinh 
+int n,c[17][17],ans;
+int dp[1 << 16][17];
+int main (){
+	freopen("QHDbitmask_Trip.inp","r",stdin);
+	freopen("QHDbitmask_Trip.out","w",stdout);
+	cin >> n;
+	for (int i = 0; i < n; i++)
+	    for (int j = 0; j < n; j++)
+	        cin >> c[i][j];
+	for (ll mask = 1; mask < (1 << n); mask++){
+		if (__builtin_popcount(mask) == 1) continue;
+		else {
+		    for (int i = 0; i < n; i++){
+		    	if (bit(mask , i)) {
+		    		dp[mask][i] = 1e9;
+		    		int pre_mask = mask - (1 << i);
+		            for (int j = 0; j < n; j++){
+			    	    if (bit(pre_mask , j))
+			    	       dp[mask][i] = min(dp[mask][i] , dp[pre_mask][j] + c[j][i]); 
+				        }
+				     }    
+		      }
+		  }
+   }
+	ans = 1e9;
+	for (int i = 0; i < n; i++) ans = min(ans , dp[(1 << n) - 1][i]);
+	cout << ans;
+	return 0;
+}
