@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+using namespace std;
+// Vnoi wiki - Deque/Min max doan tinh tien
+
+#define ll long long
+const ll INF = 1e18;
+int n,m,k,a[200009];
+ll dp[201][200009];
+
+void Input(){
+	cin >> n >> m >> k;
+	for (int i = 1; i <= n; i++){
+		cin >> a[i];
+		dp[1][i] = a[i];
+	}
+}
+
+void sol(){
+	dp[1][0] = -INF;
+	for (int i = 2; i <= k; i++){
+		dp[i][0] =-INF;
+		deque <ll> dq;
+		for (int j = 1; j <= n; j++){
+			while (!dq.empty() && dq.front() < (j - m)) 
+				dq.pop_front();
+			while (!dq.empty() && dp[i - 1][j - 1] >= dp[i - 1][dq.back()])
+				dq.pop_back();
+			dq.push_back(j - 1);
+			dp[i][j] = dp[i - 1][dq.front()] + a[j]*i;
+		}
+	}
+	ll ans = -INF;
+	for (int j = 1; j <= n; j++) ans = max(ans , dp[k][j]);
+	cout << ans << endl;
+}
+
+int main (){
+	Input();
+	sol();
+	return 0;
+}
