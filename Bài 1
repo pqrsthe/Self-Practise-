@@ -1,1 +1,24 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define el '\n'
+#define ll long long
+#define st first
+#define nd second
+
+const int INTMAX = 2e9;
+const int nm = 2e5 + 9;
+int a[nm];
+void solve(){
+	int n; cin >> n;
+  cout << n + 1; 
+}
+
+signed main (){
+	int t; t = 1;
+	while (t--){
+		solve();
+	}
+	return 0;
+}
 
