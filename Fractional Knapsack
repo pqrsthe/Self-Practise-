@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define st first
+#define nd second
+const int N = 1e3 + 9; 
+const int MOD = 1e9 + 7; 
+const int nm = 1e5 + 9; 
+struct item {
+	int profit, weight;
+};
+item a[nm];
+bool cmp(struct item a, struct item b)
+{
+	double fi = (double)a.profit / (double)a.weight;
+	double se = (double)b.profit / (double)b.weight;
+	return fi > se;
+}
+
+double solve(int W, item a[], int N)
+{
+	sort(a, a + N, cmp);
+	double ans = 0.0;
+	for (int i = 0; i < N; i++) {
+		if (a[i].weight <= W) {
+			W -= a[i].weight;
+			ans += a[i].profit;
+		}
+		else {
+			ans += a[i].profit * ((double)W / (double)a[i].weight);
+			break;
+		}
+	}
+	return ans; 
+}
+
+int main()
+{
+	int N,W; cin >> N >> W;
+	for (int i = 0; i < N; i++) cin >> a[i].profit >> a[i].weight; 
+	cout << solve(W, a, N);
+	return 0;
+}
