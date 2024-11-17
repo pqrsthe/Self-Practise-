@@ -1,0 +1,37 @@
+#include <bits/stdc++.h>
+using namespace std; 
+// Source: ko rõ - có đề bài (word) 
+
+// tmp(i) + w(j) > k => it = upper_bound(k - w(j)) -> tra ve phan tu dau tien co gia tri > k - w(j) 
+// Pos = it - 1
+// se.erase(vi tri pos); se.insert(ptu vua xoa + w(i)) 
+// -> O(logn) 
+
+int soLuongTui(int q, const std::vector<int>& w) {
+    std::multiset<int> tui; // S? d?ng multiset d? luu tr?ng lu?ng hi?n t?i c?a các túi
+
+    for (int trongLuong : w) {
+        // Tìm túi có tr?ng lu?ng l?n nh?t mà có th? thêm d? v?t vào mà không vu?t quá q
+        auto it = tui.upper_bound(q - trongLuong);
+        
+        if (it != tui.begin()) {
+            --it; // Di chuy?n iterator v? túi phù h?p
+            int trongLuongHienTai = *it;
+            tui.erase(it); // Xóa tr?ng lu?ng cu c?a túi
+            tui.insert(trongLuongHienTai + trongLuong); // C?p nh?t tr?ng lu?ng m?i
+        } else {
+            // Không có túi nào phù h?p, t?o túi m?i
+            tui.insert(trongLuong);
+        }
+    }
+
+    return tui.size(); // S? lu?ng túi du?c s? d?ng
+}
+
+int main() {
+    int q = 10; // Tr?ng lu?ng t?i da c?a m?t túi
+    std::vector<int> w = {2, 3, 8, 4, 5}; // Tr?ng lu?ng c?a các món d?
+
+    std::cout << "S? lu?ng túi c?n dùng: " << soLuongTui(q, w) << std::endl;
+    return 0;
+}
