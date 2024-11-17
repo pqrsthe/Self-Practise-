@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+using namespace std;
+// https://hnoj.edu.vn/contest/c1c3_bs4
+#define el '\n'
+#define ll long long
+#define st first
+#define nd second
+#define pii pair<int,int>
+
+const int INTMAX = 2e9;
+const int nm = 2e5 + 9;
+int a[nm],b[nm]; 
+
+bool check(int n, int a[], int h, int value){
+	int dem = 0;
+	for (int i = 1; i <= n; i++){
+		dem += a[i] / value; 
+		if (a[i] % value != 0) dem++; 
+	}
+	if (dem > h) return false; 
+	return true; 
+}
+
+void solve(){
+	int n,h; cin >> n >> h; 
+	for (int i = 1; i <= n; i++) cin >> a[i]; 
+	int l = 1, r = 1e9, ans = 1e9;
+	while (l <= r){
+		int mid = (l + r) / 2; 
+		if (check(n , a, h, mid)){
+			ans = min(ans , mid); 
+			r = mid - 1; 
+		}
+		else l = mid + 1;
+	}
+	cout << ans; 
+}
+
+signed main (){
+	int t; t = 1;
+	while (t--){
+		solve();
+	}
+	return 0;
+}
