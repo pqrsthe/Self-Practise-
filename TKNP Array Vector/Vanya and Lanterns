@@ -1,0 +1,29 @@
+#include <bits/stdc++.h>
+using namespace std;
+// https://hnoj.edu.vn/contest/c1c3_bs4
+#define el '\n'
+#define ll long long
+#define st first
+#define nd second
+#define pii pair<int,int>
+
+const int INTMAX = 2e9;
+const int nm = 2e5 + 9;
+double a[nm];
+void solve(){
+	double maxdist = 0; 
+	int n,l; cin >> n >> l; 
+	for (int i = 1; i <= n; i++) cin >> a[i]; 
+	sort (a + 1, a + 1 + n); 
+	for (int i = 1; i <= n - 1; i++) maxdist = max(maxdist , a[i + 1] - a[i]); 
+	double ans = max(maxdist / 2, max(a[1] - 0 , l - a[n])); 
+	cout << fixed << setprecision(9) << ans << el; 
+}
+
+signed main (){
+	int t; t = 1;
+	while (t--){
+		solve();
+	}
+	return 0;
+}
