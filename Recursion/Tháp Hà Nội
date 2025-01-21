@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 1e3 + 9;
+#define el '\n'
+int n,x[N],k;
+bool used[N];
+//A?C
+//A?B
+//C?B
+//A?C
+//B?A
+//B?C
+//A?C
+void bt(int i, char x, char y, char z){
+	if (i == 1){
+		cout << x << "->" << z << el; 
+		return; 
+	}
+	if (i > 1){
+		bt(i - 1, x, z, y); 
+		cout << x << "->" << z << el; 
+		bt(i - 1, y , x, z);
+	}
+}
+
+int main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	int n; cin >> n; 
+	bt(n,'A','B','C');  
+	return 0;
+}
