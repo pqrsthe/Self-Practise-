@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 1e2 + 9;
+#define el '\n'
+#define int long long
+int n,a[N][N],x[N]; 
+bool used[N]; 
+int ans=1e18; 
+
+void update(int &ans){
+	int cost = 0; 
+	for (int i = 1; i <= n; i++){
+		if (i == 1) cost += a[1][x[i]]; 
+		else if (i == n) cost += a[x[i-1]][1]; 
+		else cost += a[x[i - 1]][x[i]];
+	}
+	ans = min(ans, cost); 
+}
+
+void bt(int i){
+	for (int j = 2; j <= n; j++)
+		if (!used[j]){
+			x[i] = j; 
+			used[j] = true; 
+//			if (i > 1) cost += a[j][x[i - 1]]; 
+//			else cost += a[j][1]; 
+			if (i == (n - 1)){
+//				cost += a[1][j]; 
+				update(ans); 
+			}
+			else bt(i + 1); 
+			used[j] = false; 
+		}
+}
+
+signed main (){
+	freopen ("TSP.inp","r",stdin); 
+	freopen ("TSP.out","w",stdout); 
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n; 
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= n ;j++)
+			cin >> a[i][j]; 
+	bt(1); 
+	if (ans != 1e18) cout << ans; 
+	else cout << 0; 
+	return 0;
+}
