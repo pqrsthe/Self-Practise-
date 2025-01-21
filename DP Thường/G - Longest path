@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 2e5 + 9;
+const int N = 1e3 + 9;
+#define el '\n'
+int dp[nm],n,m; 
+vector<int> adj[nm];
+bool vis[nm]; 
+
+int dfs(int u){
+	if (dp[u] != 0) return dp[u]; 
+	for (auto v : adj[u])
+		if (!vis[v]){
+			dp[v] = dfs(v); 
+			dp[u] = max(dp[u], dp[v] + 1); 
+		}
+	return dp[u]; 
+}
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> m; 
+	for (int i = 0; i < m; i++){
+		int u,v; cin >> u >> v; 
+		adj[u].push_back(v); 
+	}
+	for (int i = 1; i <= n; i++) dfs(i); 	
+	int ans = -1; ans = *max_element(dp + 1, dp + 1 + n); 
+	cout << ans; 
+	return 0;
+}
