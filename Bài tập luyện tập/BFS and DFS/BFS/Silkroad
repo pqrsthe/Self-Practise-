@@ -1,0 +1,57 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e5 + 9;
+const int N = 1e3 + 9;
+#define el '\n'
+#define pii pair<int, int>
+vector<pii> adj[nm];
+int ans = 2e9, n, m;
+bool used[nm];
+
+bool bfs(int source, int value) {
+    queue<int> q;
+    used[source] = true;
+    q.push(source);
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        for (auto v : adj[u]) {
+            int fi = v.first, wei = v.second;
+            if (wei <= value && used[fi] == true) {
+                if (fi == n)
+                    return true;
+            } else if (wei <= value && !used[fi]) {
+                q.push(fi);
+                used[fi] = true;
+                if (fi == n)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+signed main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    cin >> n >> m;
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        adj[u].push_back({ v, w });
+        adj[v].push_back({ u, w });
+    }
+    int l = 1, r = 2e9;
+    while (l <= r) {
+        int mid = l + r >> 1;
+        if (bfs(1, mid)) {
+            ans = mid;
+            r = mid - 1;
+        } else
+            l = mid + 1;
+        fill(used, used + nm - 5, false);
+    }
+    cout << ans;
+    return 0;
+}
