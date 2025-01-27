@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e5 + 9;
+const int N = 1e3 + 9;
+const int LOG = 17; 
+#define el '\n'
+vector <int> adj[nm];
+bool used[nm]; 
+int n,q,par[nm],h[nm],up[nm][LOG + 1]; 
+bool bit(int mask, int i){
+	return mask & (1 << i);
+}
+
+void dfs(int u){
+	used[u] = true; 
+	for (auto v : adj[u])
+		if (!used[v]){
+			h[v] = h[u] + 1; 
+			used[v] = true; 
+			par[v] = u; 
+			dfs(v); 
+		}
+}
+
+void process(){
+	dfs(1); 
+	for (int u = 1; u <= n; u++) up[u][0] = par[u]; 
+	for (int j = 1; j <= LOG; j++)
+		for (int u = 1; u <= n; u++)
+			up[u][j] = up[up[u][j-1]][j-1]; 
+}
+
+int ancestor_k(int u, int k){
+	for (int j = 0; (1 << j) <= k; j++)
+		if (bit(k,j)) u = up[u][j]; 
+	return u; 
+}
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> q; 
+	for (int i = 1; i < n; i++){
+		int u,v; cin >> u >> v; 
+		adj[u].push_back(v); 
+		adj[v].push_back(u); 
+	}
+	process();
+	while (q--){
+		int u,k; cin >> u >> k; 
+		cout << ancestor_k(u,k) << el; 
+	}
+	return 0;
+}
