@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 5e5 + 9;
+const int N = 1e3 + 9;
+#define el '\n'
+bool used[nm],sta[nm]; 
+vector<int> adj[nm]; 
+int d[nm],n,m,k; 
+
+void bfs(int u){
+	queue<int> q; 
+	d[u] = 0; 
+	q.push(u); used[u] = true; 
+	while (!q.empty()){
+		int u = q.front(); 
+		q.pop(); 
+		for (auto v : adj[u])
+			if (!used[v]){
+				used[v] = true;
+				q.push(v); 
+				d[v] = d[u] + 1; 
+			}
+	}
+}
+
+signed main (){
+	int ans = 0; 
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> m >> k; 
+	for (int i = 1; i <= k; i++){
+		int x; cin >> x; sta[x] = true; 
+	}
+	for (int i = 1; i <= m; i++){
+		int u,v; cin >> u >> v; 
+		adj[v].push_back(u); 
+	}
+	bfs(1); 
+//	for (int i = 1; i <= n; i++) cout << d[i] << " "; cout << el; 
+	for (int i = 1; i <= n; i++)
+		if (sta[i]) ans += d[i]; 
+	cout << ans; 
+	return 0;
+}
