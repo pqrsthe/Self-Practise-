@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e5 + 9;
+const int N = 1e3 + 9;
+const int LOG = 17; 
+#define el '\n'
+#define pii pair<int,int> 
+vector <pii> adj[nm];
+bool used[nm];
+int par[nm],h[nm], up[nm][LOG + 1], dist[nm][LOG + 1]; 
+int n,q; 
+
+bool bit(int mask, int i){
+	return mask & (1 << i); 
+}
+
+void dfs(int u){
+	used[u] = true; 
+	for (auto x : adj[u]){
+		int v = x.first; 
+		if (!used[v]){
+			par[v] = u;
+			h[v] = h[u] + 1; 
+			used[v] = true; 
+			dfs(v); 
+		}
+	}
+}
+
+void process(){
+	dfs(1); 
+	for (int u = 1; u <= n; u++){
+		up[u][0] = par[u]; 
+	}
+	for (int j = 1; j <= LOG; j++){
+		for (int u = 1; u <= n; u++){
+			up[u][j] = up[up[u][j - 1]][j - 1]; 	
+			if (dist[u][j - 1] != 0 && dist[up[u][j-1]][j - 1] != 0) dist[u][j] = dist[u][j - 1] + dist[up[u][j-1]][j - 1]; 
+		}
+	}
+//	cout << dist[2][0] << " " << dist[1][0] << " " << dist[2][1] << el;
+//	for (int j = 0; j <= LOG; j++){
+//		for (int u = 1; u <= n; u++){
+//			cout << u << " " << dist[u][j] << " "; 
+//		}
+//		cout << el; 
+//	}
+}
+
+int calc(int u, int k){
+	int sum = 0; 
+	for (int j = 0; (1 << j) <= k; j++)
+		if (bit(k,j)){
+			sum += dist[u][j]; 
+			u = up[u][j];
+		}
+	return sum; 
+}
+
+int query(int u, int x){
+	int l = 0, r = h[u], k = -1; 
+	while (l <= r){
+		int mid = l + r >> 1; 
+		if (calc(u, mid) <= x){
+			k = mid; l = mid + 1; 
+		}
+		else r = mid - 1; 
+	}
+	if (k == -1) return -1;
+//	return k;  
+	for (int j = 0; (1 << j) <= k; j++)
+		if (bit(k,j)) u = up[u][j]; 
+	return u; 
+}
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> q; 
+	for (int i = 1; i < n; i++){
+		int u,v,w; cin >> u >> v >> w; 
+		adj[u].push_back({v,w}); 
+		adj[v].push_back({u,w}); 
+		dist[v][0] = w; 
+	}
+	process(); 
+	while (q--){
+		int u,x; cin >> u >> x; 
+		cout << query(u,x) << el; 
+	}
+	return 0;
+}
