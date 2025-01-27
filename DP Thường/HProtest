@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+// HPROTEST – Bò biểu tình (bản khó)
 const int nm = 1e6 + 9;
 const int N = 1e3 + 9;
 const int MOD = 1e9 + 9;
