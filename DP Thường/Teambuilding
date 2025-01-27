@@ -1,0 +1,29 @@
+#include <bits/stdc++.h>
+using namespace std;
+// TEAMBUILDING (OLP MT&TN 2023 Sơ Loại Chuyên Tin)
+const int nm = 1e4 + 9;
+const int N = 1e3 + 9;
+#define el '\n'
+int n,k,a[nm],dp[nm],one[nm],two[nm];
+const int MOD = 1e9 + 7; 
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> k; string s; cin >> s; 
+	s = "@*" + s;
+	for (int i = 2; i <= n+1; i++){
+		int cur = s[i] - '0'; 
+		one[i] = one[i - 1]; two[i] = two[i - 1];
+		if (cur == 0) one[i]++; 
+		else two[i]++; 
+	}
+	dp[1] = 1; 
+	for (int i = 2; i <= n+1; i++)
+		for (int j = 1; j < i; j++){
+			int cur = abs(one[i] - one[j] - two[i] + two[j]); 
+			if (cur <= k) dp[i] = ((dp[i] % MOD) + (dp[j] % MOD)) % MOD;
+		}
+	cout << dp[n+1]; 
+	return 0;
+}
