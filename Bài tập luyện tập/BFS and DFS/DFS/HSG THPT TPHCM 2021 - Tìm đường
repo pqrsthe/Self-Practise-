@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 1e3 + 9;
+const int MOD = 1e9 + 7;
+#define el '\n'
+int n,a[N][N],mx;
+bool ok = false,used[N][N]; 
+const int dx[4] = {-1,0,0,1}; 
+const int dy[4] = {0,-1,1,0}; 
+void dfs(int x, int y, int diff){
+	used[x][y] = true; 
+	if (x == n && y == n){
+		ok = true; return; 
+	}
+	if (ok) return; 
+	for (int i = 0; i < 4; i++){
+		int u = x + dx[i], v = y + dy[i];
+		int d = abs(a[u][v] - a[x][y]);
+		if (u > 0 && u <= n && v > 0 && v <= n && !used[u][v] && d <= diff) dfs(u,v,diff); 
+	}
+} 
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n; 
+	for (int i = 1; i <= n; i++){
+		for (int j = 1; j <= n; j++){
+			cin >> a[i][j]; mx = max(mx,a[i][j]);  
+		}
+	}
+	int l = 0, r = mx, ans = -1; 
+	while (l <= r){
+		memset(used, false, sizeof used); 
+		int mid = l + r >> 1;
+		dfs(1,1,mid);  
+		if (ok){
+			ans = mid; 
+			r = mid - 1;
+		} else l = mid + 1;
+		ok = false; 
+	} 
+	cout << ans; 
+	return 0;
+}
