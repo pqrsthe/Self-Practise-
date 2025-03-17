@@ -1,0 +1,51 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 1e4 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+int par[N],sz[N];
+struct Dsu{
+	void prepare(){
+		for (int u = 1; u <= N; u++){
+			par[u] = u; sz[u] = 1; 
+		}			
+	}
+	int find_set(int v){
+		if (v == par[v]) return v; 
+		else return par[v] = find_set(par[v]); 
+	}
+	bool Union(int a, int b){
+		a = find_set(a); b = find_set(b); 
+		if (a == b) return false; 
+		if (sz[a] < sz[b]) swap(a,b);
+		sz[a] += sz[b]; par[b] = a; 
+		return true;
+	}
+	bool can(int a, int b){
+		a = find_set(a); b = find_set(b); 
+		if (a == b) return false; 
+		return true;
+	}
+} dsu; 
+int p; 
+
+signed main (){
+	freopen ("Bin.inp","r",stdin); 
+	freopen ("Bin.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> p; dsu.prepare();
+	while (p--){
+		int op,x,y; cin >> x >> y >> op;
+		if (op == 1){
+			if (dsu.Union(x,y)) continue; 	
+		} else{
+			if (dsu.can(x,y)) cout << 0 << el; 
+			else cout << 1 << el; 
+		}
+	}
+	return 0;
+}
