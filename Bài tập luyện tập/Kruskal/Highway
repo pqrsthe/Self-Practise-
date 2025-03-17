@@ -1,0 +1,97 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 1e3 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define piid pair<pair<int,int>,double>
+struct Data{
+	double x,y; 
+	double F(Data a, Data b){
+		double len = sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y)); 
+		return len; 
+	}
+} data[N]; 
+int n,sz[N],par[N];
+double weight;
+vector <piid> edge;
+/*9
+1 5 
+0 0
+3 2
+4 5
+5 1
+0 4
+5 2
+1 2
+5 3
+4
+1 3
+9 7
+1 2
+2 3 */
+void prepare(){
+	for (int i = 1; i <= n; i++){
+		sz[i] = 1; par[i] = i; 
+	}
+}
+
+int find_set(int v){
+	if (v == par[v]) return v; 
+	else return par[v] = find_set(par[v]); 
+}
+
+bool Union(int u, int v){
+	u = find_set(u); v = find_set(v); 
+	if (u == v) return false; 
+	if (sz[u] < sz[v]) swap(u,v); 
+	sz[u] += sz[v]; par[v] = u;
+	return true; 
+}
+
+bool cmp(piid a, piid b){
+	return a.second < b.second; 
+}
+
+void MST(){
+	vector<pair<int,int>> ans; 
+	sort (edge.begin(), edge.end(), cmp); 
+	for (auto e : edge){
+		int u = e.first.first, v = e.first.second;
+		double w = e.second; 
+		if (Union(u,v)){
+			weight += w; 
+			ans.push_back({u,v}); 
+		}
+	}
+//	for (int i = 0; i < ans.size(); i++) cout << ans[i].first << " " << ans[i].second << el;
+}
+
+signed main (){
+//	freopen ("Highway.inp","r",stdin); 
+//	freopen ("Highway.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n; 
+	for (int i = 1; i <= n; i++){
+		cin >> data[i].x >> data[i].y; 
+	}
+	for (int i = 1; i < n; i++){
+		for (int j = i + 1; j <= n; j++){
+			double w = data[i].F(data[i],data[j]);
+			piid e; e.first.first = i; e.first.second = j; e.second = w; 
+			edge.push_back(e);
+		}
+	}
+	prepare();
+//	for (auto i : edge) cout << i.first.first << " " << i.first.second << " " << i.second << el;
+	int m; cin >> m; 
+	for (int i = 1; i <= m; i++){
+		int u,v; cin >> u >> v; 
+		if (Union(u,v)) continue; 
+	}
+	MST(); 
+	cout << fixed << setprecision(5) << weight; 
+	return 0;
+}
