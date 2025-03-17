@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+const int N = 256; 
+const long long INF = 1e18;
+#define el '\n'
+#define pic pair<int, char>
+int dist[N];
+bool tag[N]; 
+vector<pic> g[N]; 
+
+void Dijkstra() {
+    fill(dist, dist + N, INF); 
+    priority_queue<pic, vector<pic>, greater<pic>> pq;
+    pq.push({0, 'z'}); 
+    dist['z'] = 0;
+    while (!pq.empty()) {
+        char u = pq.top().second;
+        int d = pq.top().first; pq.pop();
+        for (auto &e : g[u]) {
+            char v = e.second;
+            int w = e.first;
+            if (dist[v] > dist[u] + w) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+}
+
+signed main() {
+    freopen("vuontre.inp", "r", stdin); 
+    freopen("vuontre.out", "w", stdout); 
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    int p; cin >> p;
+    for (int i = 0; i < p; i++) {
+        char u, v; int w;
+        cin >> u >> v >> w;
+        if (u >= 'A' && u <= 'Z') tag[tolower(u)] = true;
+        if (v >= 'A' && v <= 'Z') tag[tolower(v)] = true; 
+        u = tolower(u);
+        v = tolower(v);
+        g[u].push_back({w, v});
+        g[v].push_back({w, u}); 
+    }
+    Dijkstra();
+    char res = ' ';
+    int ans = INF;
+    for (char i = 'a'; i < 'z'; i++) {
+        if (tag[i] && dist[i] != INF && dist[i] < ans) {
+            ans = dist[i];
+            res = i;
+        }
+    }
+    if (ans == INF) {
+        cout << "-1";
+    } else {
+        cout << char(toupper(res)) << " " << ans;
+    }
+    return 0;
+}
