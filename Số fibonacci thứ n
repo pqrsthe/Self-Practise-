@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 1e3 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+int n; 
+string f,f0,f1; 
+void equal_length(string &a, string &b){
+	while (a.size() < b.size()) a = "0" + a; 
+	while (b.size() < a.size()) b = "0" + b; 
+}
+
+string add(string &a, string &b){
+	equal_length(a,b); 
+	string res = ""; 
+	int carry = 0; 
+	for (int i = a.size()-1; i >= 0; i--){
+		int d = a[i] - '0' + b[i] - '0' + carry; 
+		carry = d / 10; 
+		res = char(d%10 + '0') + res; 
+	}	
+	if (carry) res = "1" + res; 
+	return res; 
+}
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n; 
+	f0 = "0"; f1 = "1"; 
+	for (int i = 1; i <= n; i++){
+		f = add(f0,f1); 
+		f0 = f1; 
+		f1 = f; 
+	}
+	cout << f; 
+ 	return 0;
+}
