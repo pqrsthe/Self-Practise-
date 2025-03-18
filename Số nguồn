@@ -1,0 +1,47 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://viblo.asia/p/xu-ly-so-nguyen-lon-phan-1-nhapxuat-phep-so-sanh-phep-cong-va-phep-tru-V3m5WQpxZO7
+const int nm = 1e6 + 9;
+const int N = 1e3 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+string m; 
+void equal_length(string &a, string &b){
+	while (a.size() < b.size()) a = "0" + a; 
+	while (b.size() < a.size()) b = "0" + b; 
+}
+
+string tsl(string a, string b){
+	equal_length(a,b); 
+	string res = ""; int carry = 0; 
+	for (int i = a.size()-1; i >= 0; i--){
+		int d = (a[i]-'0') - (b[i]-'0') - carry; 
+		if (d < 0){
+			d += 10; carry = 1;
+		} else carry = 0; 
+		res = char(d + '0') + res; 
+	}
+	while (res.size() > 1 && res.front() == '0') res.erase(res.begin()); 
+	return res; 
+}
+
+string solve(string m){
+	int msz = m.size(), dn = 9 * msz; 
+	for (int i = dn; i >= 1; i--){
+		string dnn = to_string(i), cur = tsl(m,dnn); 
+		int tong = 0; 
+		for (int j = 0; j < cur.size(); j++) tong += cur[j] - '0'; 
+		if (tong == i) return cur; 
+	}
+	return "-1";
+}
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> m; 
+	cout << solve(m);
+	return 0;
+}
