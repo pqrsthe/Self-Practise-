@@ -1,0 +1,76 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e5 + 9;
+const int N = 1e3 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+int n,m,des[nm],parent[nm],f[nm],ans;
+int up[nm][LOG+1];
+vector<int> g[nm];
+bool bit(int mask, int i){
+	return mask & (1 << i);
+}
+
+void dfs(int u, int par){
+	up[u][0] = par; 
+	for (auto v : g[u]){
+		if (v == par) continue; 
+		f[v] = f[u] + 1;
+		dfs(v,u); 
+	}
+}
+
+void Lifting(){
+	for (int i = 1; i <= LOG; i++){
+		for (int u = 1; u <= n; u++){
+			up[u][i] = up[up[u][i-1]][i-1];
+		}
+	}
+}
+
+int LCA(int u, int v){
+	if (f[u] < f[v]) swap(u,v); 
+	int depth = f[u] - f[v]; 
+	for (int i = LOG; i >= 0; i--){
+		if (bit(depth,i)){
+			u = up[u][i]; 			
+		}
+	}
+	if (u == v) return u; 
+	for (int i = LOG; i >= 0; i--){
+		if (up[u][i] != up[v][i]){
+			u = up[u][i]; 
+			v = up[v][i];
+		}
+	}
+	return up[u][0];
+}
+
+signed main (){
+//	freopen ("kvuichoi.inp","r",stdin);
+//	freopen ("kvuichoi.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n; 
+	for (int i = 1; i < n; i++){
+		int u,v; cin >> u >> v;
+		g[u].push_back(v);  
+		g[v].push_back(u);
+	}
+	dfs(1,-1); 
+	Lifting();
+//	for (int i = 1; i <= n; i++) cout << "[i,f[i]] = " << i << " " << f[i] << el;
+	cin >> m; 
+	for (int i = 1; i <= m; i++) cin >> des[i]; 
+	for (int i = 1; i < m; i++){
+		int lca = LCA(des[i],des[i+1]); 
+//		cout << "[i,des[i],des[i+1],lca] = " << i << " " << des[i] << " " << des[i+1] << " " << lca << el;
+//		cout << abs(f[des[i]] + f[des[i+1]] - 2*f[lca]) << el; 
+		ans += abs(f[des[i]] + f[des[i+1]] - 2*f[lca]); 
+	}
+	cout << ans;
+	return 0;
+}
+
