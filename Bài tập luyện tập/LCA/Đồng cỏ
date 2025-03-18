@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://oj.vnoi.info/contest/cvahn_ontap_dothi
+const int nm = 1e5 + 9;
+const int N = 1e3 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+int n,q,m,des[nm],parent[nm],f[nm],h[nm],ans;
+int up[nm][LOG+1];
+vector<pii> g[nm];
+bool bit(int mask, int i){
+	return mask & (1 << i);
+}
+
+void dfs(int u, int par){
+	up[u][0] = par; 
+	for (auto e : g[u]){
+		int v = e.first, w = e.second; 
+		if (v == par) continue; 
+		h[v] = h[u] + 1; 
+		f[v] = f[u] + w; 
+		dfs(v,u); 
+	}
+}
+
+void Lifting(){
+	for (int i = 1; i <= LOG; i++){
+		for (int u = 1; u <= n; u++){
+			up[u][i] = up[up[u][i-1]][i-1];
+		}
+	}
+}
+
+int LCA(int u, int v){
+	if (h[u] < h[v]) swap(u,v); 
+	int depth = h[u] - h[v]; 
+	for (int i = LOG; i >= 0; i--){
+		if (bit(depth,i)){
+			u = up[u][i]; 			
+		}
+	}
+	if (u == v) return u; 
+	for (int i = LOG; i >= 0; i--){
+		if (up[u][i] != up[v][i]){
+			u = up[u][i]; 
+			v = up[v][i];
+		}
+	}
+	return up[u][0];
+}
+
+signed main (){
+//	freopen ("Dongco.inp","r",stdin);
+//	freopen ("Dongco.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> q; 
+	for (int i = 1; i < n; i++){
+		int u,v,w; cin >> u >> v >> w; 
+		g[u].push_back({v,w}); 
+		g[v].push_back({u,w});
+	}
+	dfs(1,-1); 
+	Lifting();
+	while (q--){
+		int u,v; cin >> u >> v; 
+//		cout << "LCA: " << LCA(u,v) << el; 
+		cout << f[u] + f[v] - 2*f[LCA(u,v)] << el; 
+	}
+	return 0;
+}
+
