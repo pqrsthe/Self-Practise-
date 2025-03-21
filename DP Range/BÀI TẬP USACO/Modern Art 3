@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+//https://usaco.guide/gold/dp-ranges?lang=cpp#solution---space-jazz
 #define int long long
 const int nm = 1e6 + 9;
 const int N = 1e3 + 9;
