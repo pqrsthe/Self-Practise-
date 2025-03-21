@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://usaco.guide/gold/shortest-paths?lang=cpp
+#define int long long
+const int nm = 1e6 + 9;
+const int N = 500 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+int n,m,ans,dist[N]; 
+struct Data{
+	int v,c,fl; 
+};
+vector<Data> g[N];
+void Dijk(int mn){
+	priority_queue<pii,vector<pii>,greater<pii>> pq; 
+	memset(dist,0x3f,sizeof dist); 
+	pq.push({0,1}); dist[1] = 0; 
+	while (!pq.empty()){
+		int u = pq.top().second; pq.pop(); 
+		for (auto e : g[u]){
+			int fl = e.fl,v = e.v, w = e.c; 
+			if (fl < mn) continue; 
+			if (dist[v] > dist[u] + w){
+				dist[v] = dist[u] + w; 
+				pq.push({dist[v],v}); 
+			}
+		}
+	}
+} 
+
+signed main (){
+	freopen ("pump.in","r",stdin); 
+	freopen ("pump.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> m; 
+	vector<int> flow(m); 
+	for (int i = 1; i <= m; i++){
+		int u,v,c,fl; 
+		cin >> u >> v >> c >> fl; 
+		flow.push_back(fl); 
+		g[u].push_back({v,c,fl}); 
+		g[v].push_back({u,c,fl}); 
+	}
+	for (auto fl : flow){
+		Dijk(fl); 
+		double cur = 1.0*fl/(1.0*dist[n]);
+		cur *= pow(10,6); 
+		ans = max(ans,(long long)cur);
+	}
+	cout << ans; 
+	return 0;
+}
