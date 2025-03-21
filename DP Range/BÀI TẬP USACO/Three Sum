@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://usaco.guide/gold/dp-ranges?lang=cpp#solution---space-jazz
+const int nm = 1e6 + 9;
+const int N = 5e3 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+const int INF = 2e9;
+const int MAX = 1e6;
+#define el '\n'
+#define pii pair<int,int>
+int n,q,a[N],dp[N+1][N+1],trp[N+1][N+1];
+
+signed main (){
+	freopen ("threesum.in","r",stdin); 
+	freopen ("threesum.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> q; 
+	for (int i = 1; i <= n; i++) cin >> a[i], a[i] += MAX;
+	vector<int> freq(2*MAX+1); 
+	for (int i = 1; i <= n; i++){
+		freq[a[i+1]]++;
+		for (int j = i + 2; j <= n; j++){
+			int cur = 3*MAX - (a[i] + a[j]); 
+			if (cur >= 0 && cur <= 2*MAX) trp[i][j] += freq[cur]; 
+			freq[a[j]]++; 
+		}
+		for (int j = i + 1; j <= n; j++) freq[a[j]] = 0;
+	}
+	for (int len = 3; len <= n; len++){
+		for (int i = 1; i <= n - len + 1; i++){
+			int j = i + len - 1; 
+			dp[i][j] = dp[i+1][j] + dp[i][j-1] - dp[i+1][j-1] + trp[i][j]; 
+		}
+	}
+	while (q--){
+		int u,v; cin >> u >> v; 
+		cout << dp[u][v] << el; 
+	}
+	return 0;
+}
