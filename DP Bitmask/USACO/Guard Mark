@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://usaco.guide/gold/dp-bitmasks?lang=cpp
+#define int long long
+const int nm = 1e6 + 9;
+const int N = 12 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+const int INF = 2e15;
+#define el '\n'
+#define pii pair<int,int>
+int n,H,dp[1<<N],wei[1<<N],hei[1<<N];
+struct Data{
+	int h,w,s; 
+} ta[N]; 
+
+bool bit(int mask, int i){
+	return mask & (1 << i);
+}
+
+signed main (){
+	freopen ("guard.in","r",stdin); 
+	freopen ("guard.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> H; 
+	for (int i = 0; i < n; i++){
+		cin >> ta[i].h >> ta[i].w >> ta[i].s; 
+	}
+	for (int mask = 0; mask < (1 << n); mask++){
+		dp[mask] = -INF; 
+		for (int i = 0; i < n; i++){
+			if (bit(mask,i)) hei[mask] += ta[i].h; 
+			if (bit(mask,i)) wei[mask] += ta[i].w; 
+		}
+	}
+	int best = -1; 
+	dp[0] = INF; 
+	for (int mask = 0; mask < (1 << n); mask++){
+		for (int j = 0; j < n; j++){
+			if (bit(mask,j)) continue;
+			if (dp[mask] == -INF) dp[mask] = INF; 
+			int aft_mask = mask | (1 << j); 
+			int cost1 = min(ta[j].s, dp[mask] - ta[j].w);
+			int cost2 = min(dp[mask], ta[j].s - wei[mask]); 
+			dp[aft_mask] = max(dp[aft_mask],max(cost1,cost2));
+			if (hei[aft_mask] >= H) best = max(best, dp[aft_mask]); 
+		}
+	}
+	if (best != -1) cout << best; 
+	else cout << "Mark is too tall";
+	return 0;
+}
