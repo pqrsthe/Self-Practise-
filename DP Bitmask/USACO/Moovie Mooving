@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://usaco.guide/gold/dp-bitmasks?lang=cpp
+const int nm = 1001;
+const int N = 21;
+const int INF = 1e5;
+#define el '\n'
+#define pii pair<int,int>
+int n,L; 
+int d[N],cnt[N],a[N][nm],dp[1 << N],ans=INF; 
+bool bit(int mask, int i){
+	return mask & (1 << i);
+}
+
+int find(int idx, int x){
+	int l = 0,r = cnt[idx]-1, ans = -1; 
+	while (l <= r){
+		int mid = l + r >> 1; 
+		if (a[idx][mid] <= x){
+			ans = mid; l = mid + 1; 
+		} else r = mid - 1; 
+	}
+	return ans; 
+}
+
+signed main() {
+	freopen ("movie.in","r",stdin);
+	freopen ("movie.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> L; 
+	for (int i = 0; i < n; i++){
+		cin >> d[i] >> cnt[i]; 
+		for (int j = 0; j < cnt[i]; j++) cin >> a[i][j]; 
+	}
+	memset(dp,-1,sizeof dp); dp[0] = 0;
+	for (int mask = 0; mask < (1 << n); mask++){
+		if (dp[mask] == -1) continue; 
+		for (int i = 0; i < n; i++){
+			if (bit(mask,i)) continue; 
+			int t,aft_mask = mask | (1 << i); 
+			int itr = find(i,dp[mask]); 
+			if (itr == -1) continue; 
+			else t = a[i][itr]; 
+			dp[aft_mask] = max(dp[aft_mask],t+d[i]); 
+		}
+	}
+	for (int mask = 0; mask < (1 << n); mask++){
+		if (dp[mask] >= L) ans = min(ans , __builtin_popcount(mask)); 
+	}	
+	if (ans == INF) cout << "-1"; 
+	else cout << ans; 
+    return 0;
+}
