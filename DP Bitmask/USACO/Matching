@@ -1,0 +1,27 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://usaco.guide/gold/dp-bitmasks?lang=cpp
+const int MAX = 1e6;
+const int N = 20 + 2; 
+const int MOD = 1e9 + 7; 
+#define el '\n'
+int n,a[N][N],dp[1 << N];
+signed main() {
+    cin >> n; 
+    for (int i = 1; i <= n; i++){
+    	for (int j = 1; j <= n; j++){
+    		cin >> a[i][j]; 
+		}
+	}
+	dp[0] = 1; 
+	for (int mask = 0; mask < (1 << n); mask++){
+		int numbit = __builtin_popcount(mask); 
+		for (int i = 1; i <= n; i++){
+			if ((mask & (1 << (i-1))) || !a[i][numbit+1]) continue; 
+			dp[mask | (1 << (i-1))] += dp[mask]; 
+			dp[mask | (1 << (i-1))] %= MOD; 
+		}
+	}
+	cout << dp[(1 << n) - 1] % MOD;
+    return 0;
+}
