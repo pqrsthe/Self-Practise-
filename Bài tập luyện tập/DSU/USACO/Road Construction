@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://usaco.guide/gold/dsu?lang=cpp
+const int nm = 1e6 + 9;
+const int N = 2e5 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+int n,m,k,a[N],b[N],res; 
+int par[N],sz[N]; 
+pii query[N]; 
+map<pii,bool> mark; 
+void make_set(){
+	for (int u = 1; u <= n; u++){
+		par[u] = u; sz[u] = 1; 
+	}
+}
+
+int find_set(int v){
+	if (v == par[v]) return v; 
+	return par[v] = find_set(par[v]); 
+}
+
+bool Union(int u, int v){
+	u = find_set(u); v = find_set(v); 
+	if (u == v) return false; 
+	if (sz[u] < sz[v]) swap(u,v); 
+	sz[u] += sz[v]; par[v] = u; 
+	return true; 	
+}
+
+void Inp(){
+	cin >> n >> m; 
+	int comp = n; 
+	for (int i = 1; i <= m; i++){
+		int u,v; cin >> u >> v; 
+		query[i] = {u,v}; 
+	}
+	make_set(); 
+	for (int i = 1; i <= m; i++){
+		int u = query[i].first, v = query[i].second;
+		if (Union(u,v)){
+			comp--; 
+			res = max(res,sz[find_set(u)]); 
+		}
+		cout << comp << " " << res << el; 
+	}
+}
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	Inp();
+	return 0;
+}
