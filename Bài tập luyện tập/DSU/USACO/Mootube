@@ -1,0 +1,69 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 2e5 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define piii pair<pair<int,int>,int>
+int sz[N],par[N]; 
+int n,q,res[N];
+piii que[N];
+struct Data{
+	int u,v,w; 
+};
+Data edge[N]; 
+bool cmpedge(Data a, Data b){
+	return a.w > b.w; 
+}
+bool cmpquery(piii a, piii b){
+	return a.second > b.second; 
+}
+void make_set(){
+	for (int i = 1; i <= n; i++){
+		sz[i] = 1; par[i] = i; 
+	}
+}
+
+int find_set(int v){
+	if (v == par[v]) return v; 
+	else return par[v] = find_set(par[v]);
+}
+
+void Union(int u, int v){
+	u = find_set(u); v = find_set(v); 
+	if (u == v) return; 
+	if (sz[u] < sz[v]) swap(u,v); 
+	sz[u] += sz[v]; par[v] = u; 
+}
+
+signed main (){
+	freopen ("mootube.in","r",stdin); 
+	freopen ("mootube.out","w",stdout); 
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> q; 
+	for (int i = 1; i < n; i++){
+		int u,v,w; cin >> u >> v >> w; 
+		edge[i] = {u,v,w}; 
+	}
+	for (int i = 1; i <= q; i++){
+		cin >> que[i].second >> que[i].first.first; 
+		que[i].first.second = i; 
+	}
+	make_set(); 
+	sort (que + 1, que + 1 + q, cmpquery); 
+	sort (edge + 1, edge + n, cmpedge); 
+	int lst = 1; 
+	for (int i = 1; i <= q; i++){
+		int v = que[i].first.first; 
+		int minwei = que[i].second, index = que[i].first.second; 
+		while (lst < n && edge[lst].w >= minwei){
+			Union(edge[lst].u,edge[lst].v); 
+			lst++;
+		}
+		res[index] = sz[find_set(v)] - 1;
+	}
+	for (int i = 1; i <= q; i++) cout << res[i] << el;
+	return 0;
+}
