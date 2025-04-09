@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 1e3 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+const int dx[8] = {-1,-1,-1,0,0,1,1,1}; 
+const int dy[8] = {-1,0,1,-1,1,-1,0,1};
+int d,r,firstx,firsty,cnt;
+char a[N][N];
+int used[N][N]; 
+bool check(int u, int v){
+	for (int i = 0; i < 8; i++){
+		int x = u + dx[i], y = v + dy[i]; 
+		if (a[x][y] == '+') return false; 
+	}
+	return true; 
+}
+
+void dfs(int x, int y){
+	used[x][y] = 1; 
+	for (int i = 0; i < 8; i++){
+		int u = x + dx[i], v = y + dy[i]; 
+		if (check(u,v)){
+			if (used[u][v]==0 && u > 1 && v > 1 && u < d && v < r){
+//				for (int j = 0; j < 8; j++){
+//					int p = u + dx[i], q = v + dy[i]; 
+//				}
+				dfs(u,v); 	
+			}
+		}
+	}
+}
+
+signed main (){
+	freopen ("Catco.inp","r",stdin); 
+	freopen ("Catco.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> d >> r; 
+	for (int i = 1; i <= d; i++){
+		for (int j = 1; j <= r; j++){
+			cin >> a[i][j]; 
+			if (a[i][j] == 'M'){
+				firstx = i; firsty = j; 
+			}
+		}
+	}
+	dfs(firstx,firsty); 
+	for (int i = 1; i <= d; i++){
+		for (int j = 1; j <= r; j++){
+			if (used[i][j] == 1){
+				for (int spr = 0; spr < 8; spr++){
+					int u = i + dx[spr], v = j + dy[spr]; 
+					if (used[u][v] == 0) used[u][v] = 2; 
+				}
+			}
+		}
+	}
+	for (int i = 1; i <= d; i++){
+		for (int j = 1; j <= r; j++){
+			if (used[i][j] != 0) cnt++; 
+//			cout << used[i][j] << " "; 
+		}
+//		cout << el;
+	}
+	cout << cnt; 
+	return 0;
+}
