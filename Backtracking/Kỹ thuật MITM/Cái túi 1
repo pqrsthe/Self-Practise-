@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+const int nm = 2e6 + 9;
+const int N = 42 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+const int INF = 2e12; 
+#define el '\n'
+#define pii pair<int,int>
+int n,m,w[N],v[N],cnt1,cnt2; 
+int ans,mx[nm];
+pii a[nm],b[nm]; int B[nm]; 
+bool used[N];
+void backtrack1(int i, int sumw, int sumv){
+	if (sumw > m) return; 
+	if (i > n/2){
+		a[++cnt1] = {sumw,sumv}; 
+		return; 
+	}
+	backtrack1(i+1,sumw+w[i],sumv+v[i]); 
+	backtrack1(i+1,sumw,sumv); 
+} 
+
+void backtrack2(int i, int sumw, int sumv){
+	if (sumw > m) return; 
+	if (i > n){
+		b[++cnt2] = {sumw,sumv}; 
+		return; 
+	}
+	backtrack2(i+1,sumw+w[i],sumv+v[i]); 
+	backtrack2(i+1,sumw,sumv); 
+} 
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> m; 
+	for (int i = 1; i <= n; i++){
+		cin >> w[i] >> v[i];
+	}
+	backtrack1(1,0,0); 
+	memset(used,false,sizeof(used)); 
+	backtrack2(n/2+1,0,0); 
+//	cout << "[cnt1,cnt2] = " << cnt1 << " " << cnt2 << el; 
+//	for (int i = 1; i <= cnt1; i++) cout << a[i].first << " " << a[i].second << el; 
+//	cout << el; 
+//	for (int i = 1; i <= cnt2; i++) cout << b[i].first << " " << b[i].second << el; 
+//	cout << el; 
+	sort(b + 1, b + 1 + cnt2);
+	for (int i = 1; i <= cnt2; i++){
+		B[i] = b[i].first; 
+		mx[i] = max(mx[i-1],b[i].second); 
+	} 
+	cnt2++; B[cnt2] = INF; 
+	for (int i = 1; i <= cnt1; i++){
+		int curw = a[i].first, curv = a[i].second; 
+		int it = upper_bound(B+1,B+1+cnt2,m-curw) - B - 1; 
+//		cout << "[i,it] = " << i << " " << it << el; 
+		if (it >= 1 && it < cnt2) ans = max(ans, curv + mx[it]); 
+	}
+	cout << ans; 
+	return 0;
+}
