@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int nm = 1e6 + 9;
+const int N = 1e3 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+#define el '\n'
+#define pii pair<int,int>
+vector<int> a,b,v1,v2;
+set<int> se; 
+void backtrack(int i, int milk, vector<int> v1, vector<int> v2){
+	if (i > 4){
+		se.insert(milk); 
+		return; 
+	}
+	if (i % 2 == 1){
+		for (int j = 0; j < v1.size(); j++){
+			int x = v1[j]; 
+			vector<int> newv1 = v1, newv2 = v2; 
+			newv2.push_back(x); 
+			newv1.erase(newv1.begin() + j); 
+			backtrack(i+1, milk - x, newv1, newv2);
+		}
+	}
+	else{
+		for (int j = 0; j < v2.size(); j++){
+			int x = v2[j];
+			vector<int> newv1 = v1, newv2 = v2; 
+			newv1.push_back(x); 
+			newv2.erase(newv2.begin() + j); 
+			backtrack(i+1, milk + x, newv1, newv2);
+		}
+	}
+}
+
+signed main (){
+	freopen ("backforth.in","r",stdin); 
+	freopen ("backforth.out","w",stdout);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	a.resize(10); b.resize(10); 
+	for (int i = 0; i < 10; i++) cin >> a[i]; 
+	for (int i = 0; i < 10; i++) cin >> b[i]; 
+	v1 = a; v2 = b; 
+	backtrack(1,1000,v1,v2); 
+	cout << se.size() << el; 
+//	for (auto it : se) cout << it << " "; 
+	return 0;
+}
