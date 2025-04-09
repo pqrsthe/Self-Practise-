@@ -1,0 +1,84 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+const int nm = 4e6 + 9;
+const int N = 23 + 9;
+const int MOD = 1e9 + 7;
+const int LOG = 23;
+const int INF = 2e9;
+#define el '\n'
+#define pii pair<int,int>
+#define piii pair<int,pair<int,int>>
+int n,w[N],ans,in[nm]; 
+pii a[nm],b[nm];
+piii IN[nm]; 
+int cnt1,cnt2;
+void backtrack1(int i, int sumA, int sumB){
+	if (i > n/2) {
+		a[++cnt1] = {sumA,sumB}; 
+		return;	
+	}
+	backtrack1(i+1,sumA+w[i],sumB); 
+	backtrack1(i+1,sumA,sumB+w[i]);
+	backtrack1(i+1,sumA,sumB); 
+}
+
+void backtrack2(int i, int sumA, int sumB){
+	if (i > n) {
+		b[++cnt2] = {sumA,sumB}; 
+		return;	
+	}
+	backtrack2(i+1,sumA+w[i],sumB); 
+	backtrack2(i+1,sumA,sumB+w[i]);
+	backtrack2(i+1,sumA,sumB); 
+}
+
+bool cmp(piii a, piii b){
+	if (a.first == b.first) return a.second.first > b.second.first;
+	return a.first < b.first;
+}
+
+int bin(int l, int r, int x){
+	int ans = INF;
+	while (l <= r){
+		int mid = l + r >> 1; 
+		if (IN[mid].first >= x){
+			if (IN[mid].first == x) ans = min(ans,mid); 
+			r = mid - 1; 	
+		} else l = mid + 1; 
+	}
+	return ans; 
+}
+
+signed main (){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	cin >> n; 
+	for (int i = 1; i <= n; i++) cin >> w[i]; 
+	backtrack1(1,0,0); 
+	backtrack2(n/2+1,0,0);
+//	for (int i = 1; i <= cnt1; i++) cout << a[i].first << " " << a[i].second << el;
+//	cout << el; 
+//	for (int i = 1; i <= cnt2; i++) cout << b[i].first << " " << b[i].second << el; 
+//	cout << el; 
+	for (int i = 1; i <= cnt2; i++){
+		in[i] = b[i].second - b[i].first; 
+		IN[i].first = b[i].second - b[i].first; 
+		IN[i].second.first = b[i].first; 
+		IN[i].second.second = b[i].second; 
+	}
+	sort (in+1, in+1+cnt2); 
+	sort (IN+1, IN+1+cnt2, cmp); 
+	for (int i = 1; i <= cnt1; i++){
+		int cur = a[i].first - a[i].second; 
+		int idx = bin(1,cnt2,cur); 
+		if (idx != INF){
+//			cout << "PHAN [A1,B1] = " << a[i].first << " + " << a[i].second << el;
+//			cout << "PHAN [idx,A2,B2] = " << idx << " " << IN[idx].second.first << " + " << IN[idx].second.second << el; 
+//			cout << el; 
+			ans = max(ans, a[i].first + IN[idx].second.first); 	
+		}
+	}
+	cout << ans;
+	return 0;
+}
