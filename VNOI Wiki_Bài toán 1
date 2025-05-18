@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define el '\n'
+#define ll long long
+#define pb push_back
+//const long long INF = 1e12;
+const int N = 1e5+90;
+const int M = 1e5+9;
+const int MOD = 1e9 + 7;
+const long long INF = 2e16;
+const int Blocksize = 320;
+int n,a[N],q,cnt[Blocksize+30][M];
+void Input(){
+    cin >> n >> q;
+    for (int i = 0; i < n; i++){cin >> a[i];}
+    for (int i = 0; i < n; i++) {cnt[i/Blocksize][a[i]]++;}
+}
+
+void update(int pos, int k){
+    int blockid = pos / Blocksize;
+    cnt[blockid][a[pos]]--;
+    a[pos] = k; cnt[blockid][k]++;
+}
+
+int query(int l, int r, int k){
+    int BlockL = (l+Blocksize-1)/Blocksize;
+    int BlockR = r / Blocksize;
+    if (BlockL >= BlockR) return count(a+l,a+r+1,k);
+    int dem = 0, LIM = BlockL * Blocksize;
+    for (int i = BlockL; i < BlockR; i++) dem += cnt[i][k];
+    for (int i = l; i < LIM; i++) if (a[i] == k) dem++;
+    for (int i = BlockR*Blocksize; i <= r; i++) if (a[i] == k) dem++;
+    return dem;
+}
+
+void solve(){
+    while (q--){
+        int l,r,k; cin >> l >> r >> k;
+        cout << query(l,r,k) << '\n';
+    }
+}
+
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    Input();
+    solve();
+    return 0;
+}
