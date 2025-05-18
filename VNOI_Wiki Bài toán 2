@@ -1,0 +1,79 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define el '\n'
+#define ll long long
+#define pb push_back
+//const long long INF = 1e12;
+const int N = 1e5+90;
+const int M = 1e5+9;
+const int MOD = 1e9 + 7;
+const long long INF = 2e16;
+const int Blocksize = 320;
+int n,a[N],q,lazy[Blocksize+30][M];
+void Input(){
+    cin >> n;
+    for (int i = 0; i < n; i++) {cin >> a[i];}
+    cin >> q;
+    for (int i = 0; i < n; i++) {lazy[i/Blocksize][a[i]] = a[i];}
+}
+
+void do_lazy(int id){
+    int L = Blocksize * id;
+    int R = Blocksize * (id+1) - 1;
+    R = min(R,n-1);
+    for (int i = L; i <= R; i++) a[i] = lazy[id][a[i]];
+    for (int i = 1; i <= 100; i++) lazy[id][i] = i;
+}
+
+void manual_update(int l, int r, int oval, int nval){
+    int id = r / Blocksize;
+    do_lazy(id);
+    for (int i = l; i <= r; i++)
+        if (a[i] == oval) a[i] = nval;
+}
+
+void update(int l, int r, int oval, int nval){
+    int BlockL = (l) / Blocksize;
+    int BlockR = r / Blocksize;
+    if (BlockL == BlockR){
+        manual_update(l,r,oval,nval);
+        return;
+    }
+    for (int id = BlockL; id < BlockR; id++){
+        for (int i = 1; i <= 100; i++)
+            if (lazy[id][i] == oval) lazy[id][i] = nval;
+    }
+    manual_update(l,(BlockL+1)*Blocksize-1,oval,nval);
+    manual_update(BlockR*Blocksize,r,oval,nval);
+}
+
+void init() {
+    int nblocks = (n + Blocksize - 1) / Blocksize;
+    for (int i = 0; i < nblocks; i++) {
+        for (int j = 1; j <= 100; j++) {
+            lazy[i][j] = j;
+        }
+    }
+}
+
+void solve(){
+    init();
+    while (q--){
+        int l,r,oval,nval; cin >> l >> r >> oval >> nval;
+        l--; r--;
+        update(l,r,oval,nval);
+    }
+    int nblocks = (n+Blocksize-1)/Blocksize;
+    for (int i = 0; i < nblocks; i++) do_lazy(i);
+    for (int i = 0; i < n; i++) cout << a[i] << " ";
+}
+
+signed main(){
+    freopen ("test.inp","r",stdin);
+    freopen ("test.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    Input();
+    solve();
+    return 0;
+}
