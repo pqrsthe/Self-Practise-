@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define el '\n'
+#define pb push_back
+#define ll long long
+#define pii pair<int,int>
+const int dx[4] = {0,-1,0,1};
+const int dy[4] = {-1,0,1,0};
+const int N = 5e3+9;
+const int M = 1e3+90;
+const int LG = 19;
+const int MOD = 1e9 + 7;
+const long long INF = 2e17;
+#define bit(mask,i) ((mask>>i)&1)
+int n,k,c[N],sz[N];
+ll dp[N][N],cur[N],Prev[N];
+vector<int> g[N];
+void Input(){
+    cin >> n;
+    for (int i = 1; i <= n; i++){
+        cin >> c[i];
+    }
+    for (int i = 1; i < n; i++){
+        int u,v; cin >> u >> v;
+        g[u].pb(v); g[v].pb(u);
+    }
+}
+void knapsack(int u, int p){
+    for (auto v : g[u]){
+        if (v == p) continue;
+        else knapsack(v,u);
+    }
+    memset(cur,-0x3f,sizeof(cur));
+    cur[0] = 0; sz[0] = 0;
+    for (auto v : g[u]){
+        if (v == p) continue;
+        //vector<int> prev(sz[u],0);
+        for (int i = 0; i <= sz[u]; i++){ //sz[u] lúc này là l-1 nhánh đầu
+            Prev[i] = cur[i]; cur[i] = -INF;
+            // Do chỉ phụ thuộc vào i-1 và i nên duy trì 2 mảng
+        }
+        for (int i = 0; i <= sz[u]; i++){ // <= do là có thể ko chọn đỉnh nào trong cây v
+            for (int j = 0; j <= sz[v]; j++){
+                cur[i+j] = max(cur[i+j],Prev[i]+dp[v][j]);
+            }
+        }
+        sz[u] += sz[v]; // Thêm nhánh v vào trong cây gốc u
+    }
+    for (int i = 0; i <= sz[u]; i++){ // <=sz(u) lúc này chưa chứa u
+        dp[u][i+1] = max(dp[u][i+1],cur[i]+c[u]);
+    }
+    dp[u][0] = 0; sz[u]++; // thêm u vào cây con gốc u
+}
+void solve(){
+    knapsack(1,-1);
+    for (int k = 1; k <= n; k++){
+        ll res = -INF;
+        for (int i = 1; i <= n; i++)
+            if (sz[i] >= k) res = max(res,dp[i][k]);
+        cout << res << '\n';
+    }
+}
+signed main(){
+    freopen ("test.inp","r",stdin);
+    freopen ("test.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    Input();
+    solve();
+    return 0;
+}
