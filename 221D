@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define el '\n'
+#define ll long long
+#define pb push_back
+//const long long INF = 1e12;
+const int N = 1e5 + 5;
+const int M = 5e5 + 90;
+const int MOD = 1e9 + 7;
+const int MAX = 1e6 + 90;
+const long long INF = 2e16;
+int n,q,a[N],cnt[MAX];
+vector<int> v;
+vector<vector<int>> pref;
+void Input(){
+    cin >> n >> q;
+    for (int i = 1; i <= n; i++){
+        cin >> a[i];
+        if (a[i] <= n) cnt[a[i]]++;
+    }
+}
+void process(){
+    for (int x = 1; x <= n; x++){
+        if (cnt[x] >= x){
+            v.pb(x);
+            vector<int> tmp(n+1,0);
+            for (int i = 1; i <= n; i++){
+                tmp[i] = tmp[i-1] + (a[i]==x);
+            }
+            pref.pb(tmp);
+        }
+    }
+}
+int query(int l, int r){
+    int count = 0;
+    for (int i = 0; i < v.size(); i++){
+        int cur = pref[i][r] - pref[i][l-1];
+        if (cur == v[i]) count++;
+    }
+    return count;
+}
+void solve(){
+    process();
+    while (q--){
+        int l,r; cin >> l >> r;
+        cout << query(l,r) << '\n';
+    }
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    int t; t = 1;
+    while (t--){
+        Input();
+        solve();
+    }
+    return 0;
+}
