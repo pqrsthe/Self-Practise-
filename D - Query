@@ -1,0 +1,67 @@
+#define pii pair<int,int>
+const int N = 2e5 + 90;
+const int M = 1e5 + 90;
+const int MOD = 1e9 + 7;
+const int MAX = 1e6 + 9;
+const long long INF = 2e16;
+const int base = 31;
+const int Blocksize = 175;
+int curans,n,q,a[N];
+short cnt[MAX],ans[N];
+struct Query{
+    int l,r,id;
+} Q[N];
+void Input(){
+    cin >> n;
+    for (int i = 1; i <= n; i++){
+        cin >> a[i];
+    }
+    cin >> q;
+}
+bool cmp(Query a, Query b){
+    if (a.l/Blocksize != b.l/Blocksize)
+        return a.l < b.l;
+    if (a.l/Blocksize % 2 == 1) return a.r < b.r;
+    else return a.r > b.r;
+}
+bool rev(Query a, Query b){
+    return a.id < b.id;
+}
+void update(int pos, int delta){
+    int id = pos/Blocksize;
+    cnt[a[pos]] += delta;
+    if (cnt[a[pos]] == 0 && delta == -1) curans--;
+    else if (cnt[a[pos]] == 1 && delta > 0) curans++;
+}
+void solve(){
+    for (int i = 1; i <= q; i++){
+        cin >> Q[i].l >> Q[i].r; Q[i].id = i;
+    }
+    sort (Q+1,Q+1+q,cmp);
+    int l = 1,r=0;
+    for (int i = 1; i <= q; i++){
+        //cout << Q[i].l << " " << Q[i].r << el;
+        while (Q[i].l > l) update(l,-1),l++;
+        while (Q[i].l < l) l--,update(l,+1);
+        while (Q[i].r > r) r++,update(r,+1);
+        while (Q[i].r < r) update(r,-1),r--;
+        ans[Q[i].id] = curans;
+    }
+    sort (Q+1,Q+1+q,rev);
+    for (int i = 1; i <= q; i++){
+        //cout << "ans["<<i<<"]="<<ans[i]<<'\n';
+        cout << ans[i] << el;
+    }
+}
+signed main(){
+    freopen ("test.inp","r",stdin);
+    freopen ("Test.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    int t; t = 1;
+    while (t--){
+        Input();
+        solve();
+    }
+    return 0;
+}
