@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define el '\n'
+#define ll long long
+#define pb push_back
+//const long long INF = 1e12;
+const int N = 1e5 + 5;
+const int M = 5e5 + 90;
+const int MOD = 1e9 + 7;
+const int MAX = 2e6 + 90;
+const long long INF = 2e16;
+int n,m,kmp[N],match[N];
+string s,t;
+void Input(){
+    cin >> n >> m;
+    cin >> s >> t;
+    s = " " + s;
+    t = " " + t;
+}
+void process_KMP(){
+    int k = kmp[1] = 0;
+    for (int i = 2; i <= n; i++){
+        while (k > 0 && s[i] != s[k+1]) k = kmp[k];
+        kmp[i] = (s[i] == s[k+1]) ? ++k : 0;
+    }
+}
+void process_match(){
+    int k = 0;
+    for (int i = 1; i <= m; i++){
+        // hau to t[i-k;i] = tien to s[1;k+1]
+        while (k > 0 && t[i] != s[k+1]) k = kmp[k];
+        match[i] = (t[i] == s[k+1]) ? ++k : 0;
+    }
+}
+void solve(){
+    process_KMP();
+    process_match();
+    /*
+    for (int i = 1; i <= n; i++){
+        cout << "kmp["<<i<<"]="<<kmp[i]<<el;
+    }
+    */
+    for (int i = 1; i <= m; i++){
+        //cout << "match["<<i<<"]="<<match[i]<<el;
+        if (match[i] == n){
+            cout << "i = " << i << el;
+        }
+    }
+}
+signed main(){
+    freopen ("test.inp","r",stdin);
+    freopen ("Test.out","w",stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    int t; t = 1;
+    while (t--){
+        Input();
+        solve();
+    }
+    return 0;
+}
