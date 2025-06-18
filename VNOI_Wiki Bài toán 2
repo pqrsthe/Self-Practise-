@@ -1,79 +1,113 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define el '\n'
+#define task "test"
 #define ll long long
-#define pb push_back
-//const long long INF = 1e12;
-const int N = 1e5+90;
-const int M = 1e5+9;
+#define el '\n'
+const int N = 1e5 + 9;
+const int MAX = 1e5 + 9;
+const int LG = 20;
 const int MOD = 1e9 + 7;
-const long long INF = 2e16;
-const int Blocksize = 320;
-int n,a[N],q,lazy[Blocksize+30][M];
-void Input(){
-    cin >> n;
-    for (int i = 0; i < n; i++) {cin >> a[i];}
-    cin >> q;
-    for (int i = 0; i < n; i++) {lazy[i/Blocksize][a[i]] = a[i];}
+#define vvi vector<vector<int>>
+#define vi vector<int>
+#define pii pair<int,int>
+const int Blsz = 330;
+int n,q,a[N],lazy[Blsz+10];
+map<int,int> cnt[Blsz+10];
+void update_block(int bl, int br, int x){
+    for (int i = bl; i <= br; i++){
+        lazy[i] += x;
+    }
 }
 
-void do_lazy(int id){
-    int L = Blocksize * id;
-    int R = Blocksize * (id+1) - 1;
-    R = min(R,n-1);
-    for (int i = L; i <= R; i++) a[i] = lazy[id][a[i]];
-    for (int i = 1; i <= 100; i++) lazy[id][i] = i;
+void apply_lazy(int id){
+    cnt[id].clear();
+    for (int i = id * Blsz; i < (id+1)*Blsz; i++){
+        a[i] = a[i] + lazy[id];
+        cnt[id][a[i]]++;
+    }
+    lazy[id] = 0;
 }
 
-void manual_update(int l, int r, int oval, int nval){
-    int id = r / Blocksize;
-    do_lazy(id);
-    for (int i = l; i <= r; i++)
-        if (a[i] == oval) a[i] = nval;
+void manual_update(int l, int r, int x){
+    int id = l / Blsz;
+    for (int i = l; i <= r; i++){
+        cnt[id][a[i]]--;
+        if (cnt[id][a[i]] == 0) cnt[id].erase(a[i]);
+        a[i] = a[i] + x;
+        cnt[id][a[i]]++;
+    }
 }
 
-void update(int l, int r, int oval, int nval){
-    int BlockL = (l) / Blocksize;
-    int BlockR = r / Blocksize;
-    if (BlockL == BlockR){
-        manual_update(l,r,oval,nval);
+void update(int l, int r, int x){
+    int bl = l / Blsz; // block chứa l
+    int br = r / Blsz; // block chứa r
+    // BLock đẩy đủ nằm trong [bl+1;br-1]
+    if (bl == br){
+        apply_lazy(bl);
+        manual_update(l,r,x);
         return;
     }
-    for (int id = BlockL; id < BlockR; id++){
-        for (int i = 1; i <= 100; i++)
-            if (lazy[id][i] == oval) lazy[id][i] = nval;
-    }
-    manual_update(l,(BlockL+1)*Blocksize-1,oval,nval);
-    manual_update(BlockR*Blocksize,r,oval,nval);
+    update_block(bl+1, br-1, x);
+    apply_lazy(bl);
+    manual_update(l,(bl+1)*Blsz - 1,x);
+    apply_lazy(br);
+    manual_update(Blsz*br,r,x);
 }
 
-void init() {
-    int nblocks = (n + Blocksize - 1) / Blocksize;
-    for (int i = 0; i < nblocks; i++) {
-        for (int j = 1; j <= 100; j++) {
-            lazy[i][j] = j;
+int get(int l, int r, int k){
+    int bl = l / Blsz;
+    int br = r / Blsz;
+    int count = 0;
+    if (bl == br){
+        apply_lazy(bl);
+        for (int i = l; i <= r; i++)
+            if (a[i] == k) count++;
+        return count;
+    }
+    apply_lazy(bl);
+    apply_lazy(br);
+    for (int i = l; i < (bl+1)*Blsz; i++){
+        if (a[i] == k) count++;
+    }
+    for (int i = br*Blsz; i <= r; i++){
+        if (a[i] == k) count++;
+    }
+    for (int i = bl+1; i < br; i++){
+        int true_val = cnt[i][k - lazy[i]];
+        count += true_val;
+    }
+    return count;
+}
+
+void solve(){
+    cin >> n >> q;
+    for (int i = 0; i < n; i++){
+        cin >> a[i];
+        cnt[i/Blsz][a[i]]++;
+    }
+    while (q--){
+        int op,l,r,x;
+        cin >> op >> l >> r >> x;
+        l--; r--;
+        if (op == 1){
+            cout << get(l,r,x) << '\n';
+        }
+        else{
+            update(l,r,x);
         }
     }
 }
 
-void solve(){
-    init();
-    while (q--){
-        int l,r,oval,nval; cin >> l >> r >> oval >> nval;
-        l--; r--;
-        update(l,r,oval,nval);
+signed main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr); cout.tie(nullptr);
+    if (fopen(task".inp","r")){
+        freopen (task".inp","r",stdin);
+        freopen (task".out","w",stdout);
     }
-    int nblocks = (n+Blocksize-1)/Blocksize;
-    for (int i = 0; i < nblocks; i++) do_lazy(i);
-    for (int i = 0; i < n; i++) cout << a[i] << " ";
-}
-
-signed main(){
-    freopen ("test.inp","r",stdin);
-    freopen ("test.out","w",stdout);
-    ios_base::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    Input();
-    solve();
+    int t; t = 1;
+    while (t--) {
+        solve();
+    }
     return 0;
 }
