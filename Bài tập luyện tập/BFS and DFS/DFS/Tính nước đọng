@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://oj.vnoi.info/contest/cvahn_ctdl_dd23
+#define task "nuocdong"
+//#define int long long
+#define ll long long
+const int MAX = 1e6 + 9; 
+const long long INF = 2e15;
+const int MOD = 1e9 + 7; 
+const int N = 1e3 + 9;
+const int K = 5e2 + 9; 
+const int dx[4] = {-1,0,0,1}; 
+const int dy[4] = {0,-1,1,0}; 
+#define pii pair<int,int>
+#define vvi vector<vector<int>>
+int m,n,a[N][N];
+int water = 0; 
+vector<pii> V; 
+bool overflow = false; 
+bool vis[N][N];
+void dfs(int x, int y, int tang){
+	for (int i = 0; i < 4; i++){
+		int u = x + dx[i]; 
+		int v = y + dy[i]; 
+		if (a[u][v] == tang){
+			water++; 
+			a[u][v]++;
+			V.push_back({u,v}); 
+			dfs(u,v,tang);
+		}
+		else if (a[u][v] < tang){
+			overflow = true;  
+		}
+	}	
+}
+
+int ans = 0;
+void solve(){
+	int maxx = 0; 
+	cin >> m >> n; 
+	for (int i = 1; i <= m; i++)
+	for (int j = 1; j <= n; j++){
+		cin >> a[i][j]; 
+		maxx = max(maxx,a[i][j]); 
+	}
+	for (int tang = 1; tang <= maxx; tang++){
+		for (int i = 1; i <= m; i++)
+		for (int j = 1; j <= n; j++){
+			if (a[i][j] == tang){
+				V.clear();
+				water = 1; 
+				a[i][j]++; 
+				overflow = false; 
+				dfs(i,j,tang); 
+				if (overflow){
+					for (auto it : V){
+						int x = it.first; 
+						int y = it.second; 
+						a[x][y] = 0; 
+					}
+					water = 0; 
+				}
+				ans += water; 
+			}
+		}
+	}
+	cout << ans << '\n';
+}
+signed main(){
+    freopen(task".inp","r",stdin);
+    freopen(task".out","w",stdout);
+    solve();
+    return 0;
+}
