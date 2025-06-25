@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+using namespace std;
+//https://oj.vnoi.info/contest/cvahn_dt09_22
+#define task "ktx"
+#define int long long
+#define ll long long
+const int MAX = 1e6 + 9; 
+const long long INF = 2e15;
+const int MOD = 123456789;
+const int N = 2e2 + 9;
+const int K = 5e2 + 9; 
+#define pii pair<int,int>
+#define vvi vector<vector<int>>
+int n,m,k,a[N];
+ll dp[N][K]; 
+void minimize(ll &x, const ll &y){
+	if (x > y) x = y; 
+}
+
+ll calc(ll sum, int c){
+	int part = c + 1; 
+	int q = sum / part; 
+	int r = sum % part; 
+	return 1LL*(part-r)*q*(q+1)/2 + 1LL*r*(q+1)*(q+2)/2;
+}
+
+void solve(){
+	cin >> n >> m >> k; 
+	for (int i = 1; i <= n; i++){
+		int x; cin >> x; 
+		a[x]++; 
+	}
+	vector<int> non; 
+	memset(dp,0x3f,sizeof(dp)); 
+	for (int i = 1; i <= m; i++){
+		if (a[i] == 0) continue; 
+		non.push_back(a[i]); 	
+	}
+	for (int j = 0; j <= k; j++) dp[0][j] = 0; 
+	int id = 0; 
+	for (auto cnt : non){
+		id++;  
+		int realk = min(k,cnt); 
+		for (int j = 0; j <= k; j++){
+			for (int l = 0; l <= j; l++){
+				ll cost = dp[id-1][l] + max(0LL,calc(cnt,j - l)); 
+				minimize(dp[id][j],cost); 
+			}
+		}
+	}
+	cout << dp[id][k] << '\n'; 
+}
+
+signed main(){
+    freopen(task".inp","r",stdin);
+    freopen(task".out","w",stdout);
+    solve();
+    return 0;
+}
