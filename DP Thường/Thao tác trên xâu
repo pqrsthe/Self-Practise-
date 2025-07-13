@@ -1,0 +1,83 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define task "OCCSTR"
+#define MASK(n) (1LL << (n))
+#define bit(msk,i) ((msk>>i)&(1))
+#define fi first
+#define se second
+#define pii pair<int,int>
+#define ll long long
+const int N = 2e3 + 9;
+const int MOD = 1e9 + 7;
+const int MAX = 5e3 + 9;
+const int LG = 6;
+const int INF = 1e8;
+string s,p;
+int n,m,f[N];
+int dp[N][N];
+void process(){
+    // Xét mọi dãy kết thúc tại i trong s
+    // Tìm vị trí gần nhất mà dãy [k,i] chứa p
+    for (int i = 1; i < m; i++) f[i] = 0;
+    for (int i = m; i <= n; i++){
+        int idx = m-1;
+        if (p[idx] == s[i])
+        for (int j = i; j >= 1; j--){
+            if (p[idx] == s[j]) idx--;
+            if (idx < 0){
+                f[i] = j;
+                break;
+            }
+        }
+        if (!f[i]) f[i] = 0;
+        //cout << "f["<<i<<"]="<<f[i]<<'\n';
+    }
+}
+void DP(){
+    // dp[i,j] là số lượng tối đa xâu p xuát hiện trong i
+    // ký tự đầu tiên của xau s, xóa đi j ký tự
+    // THCS: dp[0,0] = 0, dp[i,0] = tính trước được
+    dp[0][0] = 0;
+    for (int i = 1; i <= n; i++)
+    for (int j = 0; j <= i; j++){
+        dp[i][j] = max(dp[i-1][j],dp[i-1][max(0,j-1)]);
+        if (f[i] == 0) continue;
+        int xoa = (i - f[i] + 1) - m;
+        if (xoa > j) continue;
+        if (f[i] - 1 < j - xoa) continue;
+        int cost = dp[f[i]-1][j-xoa] + 1;
+        /*
+        if (i == 3 && j == 2){
+            cout << f[i] - 1 << " " << j - xoa << '\n';
+            cout << dp[f[i]-1][j-xoa] << '\n';
+        }
+        if (i == 7 && j == 4){
+            cout << f[i] - 1 << " " << j - xoa << '\n';
+            cout << dp[f[i]-1][j-xoa] << '\n';
+        }
+        */
+        dp[i][j] = max(dp[i][j],cost);
+    }
+    for (int xoa = 0; xoa <= n; xoa++){
+        cout << dp[n][xoa] << '\n';
+    }
+}
+void solve(){
+    cin >> s >> p;
+    s = "!" + s;
+    m = p.size();
+    n = s.size() - 1;
+    process();
+    DP();
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(task".inp","r")){
+        freopen (task".inp","r",stdin);
+        freopen (task".out","w",stdout);
+    }
+    int t; t = 1;
+    while (t--) solve();
+    return 0;
+}
