@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+using namespace std;
+// https://codeforces.com/gym/467680
+#define task "taptanh"
+const int N = 1e4 + 9;
+int n, m, cnt = 0;
+string s[N];
+int child[N * 50][26];
+int exist[N * 50];
+void Add(string x){
+    int k = 0;
+    for (int i = 0; i < x.size(); i++){
+        int  c = x[i] - 'a';
+        if (child[k][c] == 0){
+            cnt++;
+            child[k][c] = cnt;
+        }
+        k = child[k][c];
+    }
+    exist[k]++;
+}
+bool Query(string x){
+    int k = 0;
+    for(int i = 0; i < x.size(); i++){
+        int c = x[i] - 'a';
+        if (child[k][c] == 0) return false;
+        k = child[k][c];
+    }
+    return (exist[k] != 0);
+}
+void solve(){
+    cin >> n;
+    for (int i = 0; i < n; i++) cin >> s[i];
+    for (int i = 0; i < n; i++){
+        string x = s[i]; Add(x);
+    }
+    cin >> m;
+    for (int qe = 1; qe <= m; qe++){
+        string x; cin >> x;
+        cout << Query(x) << '\n';
+    }
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr); cout.tie(nullptr);
+    if(fopen(task".inp","r")){
+        freopen(task".inp","r",stdin);
+        freopen(task".out","w",stdout);
+    }
+    solve();
+    return 0;
+}
