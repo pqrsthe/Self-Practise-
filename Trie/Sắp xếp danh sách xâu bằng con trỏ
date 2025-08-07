@@ -1,0 +1,64 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define task "taptanh"
+#define ll long long
+const int maxN = 3e4 + 9;
+const int MOD = 1e9 + 7;
+const int LG = 31;
+const long long INF = 2e16;
+int numNode = 0;
+struct Node{
+    bool isEnd;
+    vector<int> index;
+    Node* child[26];
+    Node() {
+        isEnd = false;
+        for (int i = 0; i < 26; i++){
+            child[i] = nullptr;
+        }
+    }
+};
+Node* root = new Node();
+void Add(const string &x){
+    Node* p = root;
+    for (auto ch : x){
+        int c = ch - 'a';
+        if (p -> child[c] == nullptr){
+            p -> child[c] = new Node();
+        }
+        p = p -> child[c];
+    }
+    p -> isEnd = true;
+    (p -> index).push_back(++numNode);
+}
+vector<int> v;
+void dfs(Node* p){
+    if (p -> isEnd == true){
+        for (auto it : p -> index){
+            v.push_back(it);
+        }
+    }
+    for (int c = 0; c < 26; c++) if (p -> child[c] != nullptr){
+        dfs(p -> child[c]);
+    }
+}
+void solve(){
+    int n; cin >> n;
+    for (int i = 1; i <= n; i++){
+        string s; cin >> s; Add(s);
+    }
+    string current = "";
+    dfs(root);
+    for (auto id : v) cout << id << " ";
+}
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr); cout.tie(nullptr);
+    if(fopen(task".inp","r")){
+        freopen(task".inp","r",stdin);
+        freopen(task".out","w",stdout);
+    }
+    int tc; tc = 1;
+    while (tc--) solve();
+    return 0;
+}
