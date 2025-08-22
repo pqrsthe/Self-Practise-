@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+using namespace std;
+// https://oj.vnoi.info/contest/bdi77_week_25aug18
+#define task "taptanh"
+#define ll long long
+#define Node pair<ll, ll>
+#define F first
+#define S second
+#define bit(mask, i) ((mask >> (i)) & (1))
+#define MASK(i) (1LL << (i))
+
+const int maxN = 1280 + 9;
+const int MOD = 1e9 + 7;
+const int LG = 21;
+const int INF = 1e9 + 1e8;
+const int dx[4] = {-1, 0, 0, 1};
+const int dy[4] = {0, -1, 1, 0};
+
+int C, n, L[maxN];
+
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+//    freopen (task".inp", "r", stdin);
+//    freopen (task".out", "w", stdout);
+
+	cin >> C >> n; 
+	for (int i = 0; i < n; i++) cin >> L[i]; 
+	
+	vector<bitset<maxN>> dp(C + 1); 
+	dp[0][0] = 1; 
+	
+	for (auto &x : L){
+		vector<bitset<maxN>> tmp = dp; 
+		for (int kl = C; kl >= 0; kl--) if (dp[kl].any()){
+			if (kl + x <= C) dp[kl + x] |= tmp[kl]; 
+			dp[kl] |= (tmp[kl] << x); 
+		}
+	}
+	
+	int ansA = -1, ansB = -1; 
+	int res_tot = 0, res_diff = 0; 
+	
+	for (int A = 0; A <= C; A++)
+	for (int B = 0; B <= C; B++){
+		if (!dp[A][B]) continue; 
+		int tot = A + B; 
+		int diff = (A >= B ? A - B : B - A); 
+		if (tot > res_tot){
+			res_tot = tot; 
+			res_diff = diff; 
+			ansA = A; 
+			ansB = B; 
+		} else if (tot == res_tot){
+			if (diff < res_diff){
+				res_diff = diff; 
+				ansA = A; 
+				ansB = B; 
+			}
+		}
+	}
+	
+	if (ansA < ansB) swap(ansA, ansB); 
+	cout << ansA << " " << ansB << '\n'; 
+    return 0;
+}
