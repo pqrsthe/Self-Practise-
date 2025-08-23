@@ -1,0 +1,95 @@
+#include <bits/stdc++.h>
+using namespace std;
+// https://drive.google.com/file/d/1YkKrktlUfSqzp_Vxj1p0HSx5t4TAKLjD/view?usp=sharing
+#define task "SSEQ"
+#define ll long long
+#define Node pair<ll, ll>
+#define fi first
+#define se second
+#define bit(mask, i) ((mask >> (i)) & (1))
+#define MASK(i) (1LL << (i))
+
+const int maxN = 2e5 + 9;
+const int maxTD = 1e6 + 2;
+const int MOD = 1e9 + 7;
+const int LG = 21;
+const long long INF = 1e13;
+const int dx[4] = {-1, 0, 0, 1};
+const int dy[4] = {0, -1, 1, 0};
+
+struct Point{
+    int l, r, w, id;
+    Point(int l_, int r_, int w_, int id_){
+        l = l_; r = r_; id = id_; w = w_;
+    }
+};
+
+int n;
+vector<int> b;
+vector<Point> p;
+vector<Node> g[maxTD + 10];
+
+struct Segtree{
+    vector<Node> node;
+    Segtree(int n){
+        node.assign(4 * n + 10, {0, 0});
+    }
+
+    void update(int id, int l, int r, int p, ll v){
+        if (p < l || p > r) return;
+        if (l == r){
+            node[id].fi += v;
+            node[id].se = node[id].se + v;
+            return;
+        }
+
+        int mid = (l + r) / 2;
+        update(id * 2, l, mid, p, v);
+        update(id * 2 + 1, mid + 1, r, p, v);
+        node[id].fi = node[id * 2].fi + node[id * 2 + 1].fi;
+        node[id].se = max(node[id * 2].se + node[id * 2 + 1].fi, node[id * 2 + 1].se);
+    }
+
+    Node max_surfix(int id, int l, int r, int u, int v){
+        if (r < u || l > v) return {0, 0};
+        if (u <= l && r <= v) return node[id];
+        int mid = (l + r) / 2;
+        Node g1 = max_surfix(id * 2, l, mid, u, v);
+        Node g2 = max_surfix(id * 2 + 1, mid + 1, r, u, v);
+        ll sec = max(g2.se, g2.fi + g1.se);
+        return {g1.fi + g2.fi, sec};
+    }
+};
+
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    freopen (task".inp", "r", stdin);
+    freopen (task".out", "w", stdout);
+
+    cin >> n;
+    p.emplace_back(0, 0, 0, 0);
+    for (int i = 1; i <= n; i++){
+        int l, r, w; cin >> l >> r >> w;
+        p.emplace_back(l, r, w, i);
+        b.push_back(l);
+        b.push_back(r);
+        g[r].emplace_back(Node(l, w));
+    }
+
+    Segtree seg(maxTD);
+    long long res = -INF;
+    for (int r = 1; r < maxTD; r++){
+        for (auto [l, w] : g[r]){
+            seg.update(1, 1, maxTD, l, w);
+        }
+        Node calc = seg.max_surfix(1, 1, maxTD, 1, maxTD);
+        if (calc.se > res){
+            res = calc.se;
+//            cout << "res max tai r = " << r << '\n';
+//            cout << "res max tai r la: " << res << '\n';
+        }
+    }
+    cout << res << '\n';
+    return 0;
+}
