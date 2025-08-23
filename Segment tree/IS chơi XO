@@ -1,0 +1,140 @@
+#include <bits/stdc++.h>
+using namespace std;
+// https://drive.google.com/file/d/1AczGIajsNh_K4prWWbd3_1Id8Htqy6i5/view?usp=sharing
+#define task "taptanh"
+#define ll long long
+#define pii pair<ll, ll>
+#define fi first
+#define se second
+#define bit(mask, i) ((mask >> (i)) & (1))
+#define MASK(i) (1LL << (i))
+
+const int maxN = 2e3 + 9;
+const int maxTD = 2009;
+const int MOD = 1e9 + 7;
+const int LG = 21;
+const long long INF = 1e15;
+const int dx[4] = {-1, 0, 0, 1};
+const int dy[4] = {0, -1, 1, 0};
+
+struct Node{
+    ll sum;
+    ll max_pref;
+    ll max_surf;
+    ll max_sum;
+
+    Node merge(const Node &x, const Node &y){
+        ll Sum = x.sum + y.sum;
+        ll Max_pref = max(x.max_pref, x.sum + y.max_pref);
+        ll Max_surf = max(x.max_surf + y.sum, y.max_surf);
+        ll Max_sum = max(x.max_sum, y.max_sum);
+        Max_sum = max(Max_sum, x.max_surf + y.max_pref);
+        Node Nodee = {Sum, Max_pref, Max_surf, Max_sum};
+        return Nodee;
+    }
+};
+
+int numX, numO, a, b;
+vector<pii> g[maxTD + 10];
+int X1[maxN], X2[maxN], Y1[maxN], Y2[maxN];
+
+struct Segtree{
+    vector<Node> node;
+    Segtree(int n){
+        node.assign(4 * n + 10, {0, 0, 0, 0});
+    }
+
+    void update(int id, int l, int r, int p, ll v){
+        if (p < l || p > r) return;
+        if (l == r){
+            node[id].sum += v;
+//            node[id].max_pref = max(node[id].max_pref + v, 0LL);
+//            node[id].max_surf = max(node[id].max_surf + v, 0LL);
+//            node[id].max_sum = max(node[id].max_sum + v, 0LL);
+            node[id].max_pref += v;
+            node[id].max_surf += v;
+            node[id].max_sum += v;
+            return;
+        }
+
+        int mid = (l + r) / 2;
+        update(id * 2, l, mid, p, v);
+        update(id * 2 + 1, mid + 1, r, p, v);
+        node[id] = node[id].merge(node[id * 2], node[id * 2 + 1]);
+    }
+
+    Node get(int id, int l, int r, int u, int v){
+        if (r < u || l > v) return {0, 0, 0, 0};
+        if (u <= l && r <= v) return node[id];
+        int mid = (l + r) / 2;
+        Node g1 = get(id * 2, l, mid, u, v);
+        Node g2 = get(id * 2 + 1, mid + 1, r, u, v);
+        Node res = res.merge(g1, g2);
+        return res;
+    }
+};
+
+int Find(const vector<int> &nen, int v){
+    return (lower_bound(nen.begin(), nen.end(), v) - nen.begin());
+}
+
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(task".inp", "r")){
+        freopen (task".inp", "r", stdin);
+        freopen (task".out", "w", stdout);
+    }
+
+    vector<int> nenX, nenY;
+    cin >> numX;
+    for (int i = 1; i <= numX; i++){
+        cin >> X1[i] >> Y1[i];
+        nenX.push_back(X1[i]);
+        nenY.push_back(Y1[i]);
+    }
+
+    cin >> numO;
+    for (int i = 1; i <= numO; i++){
+        cin >> X2[i] >> Y2[i];
+        nenX.push_back(X2[i]);
+        nenY.push_back(Y2[i]);
+    }
+
+    cin >> a >> b;
+
+    nenX.push_back(-1001); nenY.push_back(-1001);
+    sort (nenX.begin(), nenX.end());
+    sort (nenY.begin(), nenY.end());
+    nenX.erase(unique(nenX.begin(), nenX.end()), nenX.end());
+    nenY.erase(unique(nenY.begin(), nenY.end()), nenY.end());
+
+    for (int i = 1; i <= numX; i++){
+        int x = Find(nenX, X1[i]);
+        int y = Find(nenY, Y1[i]);
+        g[x].emplace_back(pii(y, a));
+    }
+
+    for (int i = 1; i <= numO; i++){
+        int x = Find(nenX, X2[i]);
+        int y = Find(nenY, Y2[i]);
+        g[x].emplace_back(pii(y, -b));
+    }
+
+    int nrow = nenX.size(), ncol = nenY.size();
+    ll res = -INF;
+
+    for (int hd = 1; hd <= nrow; hd++){
+        Segtree seg(ncol);
+        for (int hc = hd; hc <= nrow; hc++){
+            for (auto [y, w] : g[hc]){
+                seg.update(1, 1, ncol, y, w);
+            }
+            ll calc = seg.get(1, 1, ncol, 1, ncol).max_sum;
+            res = max(res, calc);
+        }
+    }
+
+    cout << res << '\n';
+    return 0;
+}
