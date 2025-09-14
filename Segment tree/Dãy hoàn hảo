@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+using namespace std;
+#pragma GCC optimize("unroll-loops,02,no-stack-protector")
+#pragma GCC optimize("O3")
+
+#define task "taptanh"
+#define ll long long
+#define Node pair<int, int>
+#define mau first
+#define atk second
+
+const int maxN = 2e5 + 9;
+const int MOD = 1e9 + 7;
+const int INF = 1e9;
+
+int n, a[maxN];
+
+struct Segtree{
+    int n;
+    vector<int> node, lazy;
+    Segtree(int N){
+        n = N;
+        node.assign(4 * N + 10, 0);
+        lazy.assign(4 * N + 10, 0);
+    }
+
+    void push_down(int id, int l, int r){
+        lazy[id * 2] += lazy[id];
+        lazy[id * 2 + 1] += lazy[id];
+        node[id * 2] += lazy[id];
+        node[id * 2 + 1] += lazy[id];
+        lazy[id] = 0;
+    }
+
+    void update(int id, int l, int r, int u, int v, int d){
+        if (r < u || l > v) return;
+        if (u <= l && r <= v){
+            node[id] += d;
+            lazy[id] += d;
+            return;
+        }
+        int mid = (l + r) / 2;
+        push_down(id, l, r);
+        update(id * 2, l, mid, u, v, d);
+        update(id * 2 + 1, mid + 1, r, u, v, d);
+        node[id] = min(node[id * 2], node[id * 2 + 1]);
+    }
+
+    int get_min(int id, int l, int r, int u, int v){
+        if (r < u || l > v) return INF;
+        if (u <= l && r <= v) return node[id];
+        int mid = (l + r) / 2;
+        push_down(id, l, r);
+        int g1 = get_min(id * 2, l, mid, u, v);
+        int g2 = get_min(id * 2 + 1, mid + 1, r, u, v);
+        return min(g1, g2);
+    }
+};
+
+void solve(){
+    cin >> n;
+    for (int i = 1; i <= n; i++) cin >> a[i];
+    Segtree seg(n);
+    vector<int> pre(n + 1, 0), lst(n + 1, 0);
+    for (int i = 1; i <= n; i++){
+        int x = a[i];
+        pre[i] = lst[x];
+        lst[x] = i;
+        seg.update(1, 1, n, pre[i] + 1, i, 1);
+        if (pre[pre[i]] < pre[i])
+        seg.update(1, 1, n, pre[pre[i]] + 1, pre[i], -1);
+        int tmp = seg.get_min(1, 1, n, 1, i);
+//        if (i == 5){cout << i << " " << tmp << '\n';}
+        if (tmp <= 0) {cout << "NO" << '\n'; return;}
+    }
+    cout << "YES" << '\n'; return;
+}
+
+signed main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    if (fopen(task".inp", "r")){
+        freopen(task".inp", "r", stdin);
+        freopen(task".out", "w", stdout);
+    }
+
+    int tc; cin >> tc;
+    while (tc--) solve();
+    return 0;
+}
