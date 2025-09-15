@@ -1,0 +1,119 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define task "taptanh"
+#define ll long long
+#define Node pair<int, int>
+#define F first
+#define S second
+
+const int maxN = 2e5 + 9;
+const int MOD = 1e9 + 7;
+const long long INF = 2e16;
+
+struct Fenwick{
+    int n;
+    vector<int> bit;
+    Fenwick(int N){
+        n = N;
+        bit.assign(N + 1, 0);
+    }
+    void update(int u, int v){
+        for (; u <= n; u += u & (-u)) bit[u] += v;
+    }
+    int get(int u){
+        int res = 0;
+        for (; u > 0; u -= u & (-u)) res += bit[u];
+        return res;
+    }
+    int query(int l, int r){
+        return (l > 1 ? get(r) - get(l - 1) : get(r));
+    }
+};
+
+int n, k, a[maxN];
+ll C[maxN], L[maxN], L_C[maxN];
+ll limleft[maxN], limright[maxN];
+vector<ll> nen;
+
+int Find(const vector<ll> &nen, ll v){
+    return (lower_bound(nen.begin(), nen.end(), v)
+            - nen.begin() + 1);
+}
+
+int binary(int right){
+    int lo = 1, hi = right;
+    int vt2 = 0, vt1 = 0;
+    while (lo <= hi){
+        int mid = (lo + hi) / 2;
+        if (C[right] > C[mid]){
+            vt1 = mid;
+            lo = mid + 1;
+        } else{
+            hi = mid - 1;
+        }
+    }
+
+    lo = 1; hi = right;
+    while (lo <= hi){
+        int mid = (lo + hi) / 2;
+        if (L[right] > L[mid]){
+            vt2 = mid;
+            lo = mid + 1;
+        } else{
+            hi = mid - 1;
+        }
+    }
+    return min(vt1, vt2);
+}
+
+signed main(){
+	if (fopen(task".inp", "r")){
+        freopen(task".inp", "r", stdin);
+        freopen(task".out", "w", stdout);
+    }
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+
+    cin >> n >> k;
+    for (int i = 1; i <= n; i++){
+        cin >> a[i];
+        L[i] = L[i - 1];
+        C[i] = C[i - 1];
+        if (a[i] & 1) L[i] += a[i];
+        else C[i] += a[i];
+    }
+
+    for (int i = 0; i <= n; i++){
+        limleft[i] = L[i] - C[i];
+        limright[i] = L[i] - C[i] + k;
+        L_C[i] = L[i] - C[i];
+        nen.push_back(L_C[i]);
+        nen.push_back(limleft[i]);
+        nen.push_back(limright[i]);
+    }
+
+    sort(nen.begin(), nen.end());
+    nen.erase(unique(nen.begin(), nen.end()), nen.end());
+    Fenwick fenw((int)nen.size());
+
+//    cout << binary(3) << '\n';
+    int pt = 0; ll res = 0;
+    for (int i = 1; i <= n; i++){
+        int lim = binary(i);
+//        cout << "pt, lim = " << pt << " " << lim << '\n';
+        if (C[i] > 0 && L[i] > 0){
+            while (lim >= 0 && pt <= n && pt <= lim){
+                int id = Find(nen, L_C[pt]);
+                fenw.update(id, 1); pt++;
+            }
+        }
+        int L = Find(nen, limleft[i]);
+        int R = Find(nen, limright[i]);
+        int npair = fenw.query(L, R);
+//        cout << "i, npair = " << i << " " << npair << '\n';
+        res += npair;
+    }
+    cout << res << '\n';
+	return 0;
+}
