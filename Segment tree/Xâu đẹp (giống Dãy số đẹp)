@@ -7,7 +7,7 @@ using namespace std;
 #define F first
 #define S second
 
-const int maxN = 3e5 + 9;
+const int maxN = 2e5 + 9;
 const int MOD = 1e9 + 7;
 const long long INF = 2e16;
 
@@ -105,28 +105,34 @@ signed main(){
     int pt1 = 0, pt2 = 0;
     ll res = 0;
 
-    for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++){
         if (i == 1) lst[i] = 0;
         else if (nguyen_am(s[i]) != nguyen_am(s[i - 1])) lst[i] = i - 1;
         else lst[i] = lst[i - 1];
         int lim2 = binary(i);
-        int lim1 = lst[lst[i]];
-        while (pt2 <= lim2) {
-            int id = Find(nen, X[pt2]);
-            fenw.update(id, +1);
-            pt2++;
+        int lim1 = lst[lst[i]]; // Quan trọng: cận lim1 là lst[lst[i]] chứ KHÔNG PHẢI lst[lst[i]] + 1 
+								// Bởi: Ta đang dùng công thức: sum[l -> r] = sum[1 -> r] - sum[1 -> l - 1]
+								// Thực chất ta đang truy về các thẳng "l - 1" chứ không phải các thẳng "l" 
+								// nên với lim1 = lst[lst[i]] thì l - 1 = lim1 <=> l = lim1 + 1 > lim1 
+								// hay ko dính vào dãy đảo chiều 2 lần (nguyên âm -> phụ -> nguyên hoặc ngược lại) 
+								// VD: aue bcd fg. Ký tự e ký chính lầ vị trí lst[lst[ký tự g]]  
+//        cout << "i, lim1, lim2 = " << i << " " << lim1 << " " << lim2 << '\n';
+        if (N[i] > 0 && P[i] > 0){ // Điều kiện này chặt hơn điều kiện lim2 > 0 như trong bài "Dãy số đẹp" có nói
+            while (pt2 <= lim2){
+                int id = Find(nen, X[pt2]);
+                fenw.update(id, +1);
+                pt2++;
+            }
         }
-        while (pt1 < lim1) {
+        while (pt1 < lim1){
             int id = Find(nen, X[pt1]);
             fenw.update(id, -1);
             pt1++;
         }
-        if (N[i] > 0 && P[i] > 0) {
-            int L = Find(nen, limleft[i]);
-            int R = Find(nen, limright[i]);
-            int npair = fenw.query(L, R);
-            res += npair;
-        }
+        int L = Find(nen, limleft[i]);
+        int R = Find(nen, limright[i]);
+        int npair = fenw.query(L, R);
+        res += npair;
     }
     cout << res << '\n';
 	return 0;
