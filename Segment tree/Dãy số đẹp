@@ -1,6 +1,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// GIẢI THÍCH MỘT CHÚT VỀ PHẦN CHÍNH CỦA CODE (ĐOẠN 2 CON TRỎ + FENWICK TREE)
+// Bài toán tương đương với đếm số vị trí l trong Fenwick tree sao cho 0 <= l <= lim 
+// và thỏa mãn 0 <= tổng chẵn - tổng lẻ <= k -> lưu tần suất của các số trong Fenwick tree
+// và duy trì con trỏ để cập nhật node vfao Fenwick tree (lý do là vì r tâng dàn còn con trỏ pt cũng tăng theo) 
+
+// Thực chất, điều kiện if (C[i] > 0 && L[i] > 0) mới cập nhật pt là để đảm bảo doạn có đủ ít nhất 1 số chẵn
+// và ít nhất 1 số lẻ, do điều kiện lim > 0 ko đảm bảo C[i] > 0 && L[i] > 0 (chú ý quan trọng các cận trong 2 con trỏ) 
+
 #define task "taptanh"
 #define ll long long
 #define Node pair<int, int>
